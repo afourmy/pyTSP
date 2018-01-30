@@ -7,7 +7,7 @@ class City(Base):
     properties = ('name', 'longitude', 'latitude', 'population')
     
     id = Column(Integer, primary_key=True)
-    name = Column(String(120), unique=True)
+    name = Column(String, unique=True)
     longitude = Column(Float)
     latitude = Column(Float)
     population = Column(Integer)
