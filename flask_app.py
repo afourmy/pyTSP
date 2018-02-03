@@ -1,5 +1,5 @@
 from threading import Lock
-from flask import Flask, render_template, session, request
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_socketio import emit, SocketIO
 from json import load
 from os import environ
@@ -16,7 +16,6 @@ if path_app not in path:
 
 from database import db, create_database
 from models import City
-from genetic_algorithm import GeneticAlgorithm
 
 def configure_database(app):
     create_database()
@@ -52,6 +51,7 @@ def create_app(config='config'):
     socketio = configure_socket(app)
     import_cities()
     
+    from genetic_algorithm import GeneticAlgorithm
     genetic_algorithm = GeneticAlgorithm()
     return app, socketio, genetic_algorithm
 
@@ -60,12 +60,17 @@ app, socketio, genetic_algorithm = create_app()
 ## Views
 
 @app.route('/')
-def index():
+def base_redirection():
+    return redirect(url_for('algorithm', algorithm='tour_construction'))
+
+@app.route('/<algorithm>')
+def algorithm(algorithm):
     session['best'] = float('inf')
     return render_template(
         'index.html',
+        algorithm = algorithm,
         minimum_population = 500000,
-        view = '3D',
+        view = '2D',
         cities = {
             city.id: {
                 property: getattr(city, property)
@@ -76,8 +81,12 @@ def index():
         async_mode = socketio.async_mode
         )
 
-@socketio.on('send_random')
-def emit_random():
+@socketio.on('tour_construction')
+def tour_construction():
+    print('ok')
+
+@socketio.on('genetic_algorithm')
+def genetic_algorithm():
     fitness_value, solution = genetic_algorithm.cycle()
     if fitness_value < session['best']:
         session['best'] = fitness_value

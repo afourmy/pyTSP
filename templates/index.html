@@ -30,7 +30,7 @@
       var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
       
       window.setInterval(function() {
-          socket.emit('send_random');
+          socket.emit('{{ algorithm }}');
       }, 10);
       
       var layers = {
