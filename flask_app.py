@@ -46,16 +46,18 @@ def import_cities():
 def create_app(config='config'):
     app = Flask(__name__)
     app.config.from_object('config')
-
     configure_database(app)
     socketio = configure_socket(app)
     import_cities()
-    
-    from genetic_algorithm import GeneticAlgorithm
-    genetic_algorithm = GeneticAlgorithm()
-    return app, socketio, genetic_algorithm
+    return app, socketio
 
-app, socketio, genetic_algorithm = create_app()
+app, socketio = create_app()
+
+from genetic_algorithm import GeneticAlgorithm
+from tour_construction import TourConstruction
+
+ga = GeneticAlgorithm()
+tc = TourConstruction()
 
 ## Views
 
@@ -81,9 +83,10 @@ def algorithm(algorithm):
         async_mode = socketio.async_mode
         )
 
-@socketio.on('tour_construction')
+@socketio.on('nearest_neighbor')
 def tour_construction():
-    print('ok')
+    tours = tc.nearest_neighbor()
+    emit('build_tour', tours[1])
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():

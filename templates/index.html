@@ -1,7 +1,9 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Flask-SocketIO Test</title>
+  <title>TSP 2D/3D GIS visualization</title>
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='leaflet/leaflet.css') }}" rel="stylesheet">
   <style type="text/css">
       html, body {
@@ -12,233 +14,287 @@
       #map {
           min-height: 100%; 
       }
-      
+
       #earth {
           min-height: 100%; 
       }
   </style>
-  <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+  <!-- jQuery -->
+  <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+  <!-- Bootstrap -->
+  <script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
   {% if view == '2D' %}
     <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
   {% else %}
     <script src="{{ url_for('static', filename='webgl-earth/api.js') }}"></script>
   {% endif %}
-  <script type="text/javascript" charset="utf-8">
-    $(document).ready(function() {
-      namespace = '/';
-      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-      
-      window.setInterval(function() {
-          socket.emit('{{ algorithm }}');
-      }, 10);
-      
-      var layers = {
-        'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
-        'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
-        };
-      
-      {% if view == '2D' %}
-        var polylines = [];
-        socket.on('current_solution', function(path) {
-          for (i = 0; i < polylines.length; i++) { 
-            map.removeLayer(polylines[i]);
-            }
-  
-          for (i = 0; i < path.length - 1; i++) { 
-  
-            var source_lat = path[i][0];
-                source_lon = path[i][1];
-                
-            var destination_lat = path[i+1][0];
-                destination_lon = path[i+1][1];
-                
-            var pointA = new L.LatLng(source_lat, source_lon);
-            var pointB = new L.LatLng(destination_lat, destination_lon);
-            var pointList = [pointA, pointB];
-            
-            var polyline = new L.Polyline(pointList, {
-              color: '#0000ff',
-              weight: 3,
-              opacity: 1,
-              smoothFactor: 1
-              });
-  
-            polyline.addTo(map);
-            polylines.push(polyline);
-          }
-          
-        });
-        
-        var best_polylines = [];
-        socket.on('best_solution', function(path) {
-          for (i = 0; i < best_polylines.length; i++) { 
-            map.removeLayer(best_polylines[i]);
-            }
-  
-          for (i = 0; i < path.length - 1; i++) { 
-  
-            var source_lat = path[i][0];
-                source_lon = path[i][1];
-                
-            var destination_lat = path[i+1][0];
-                destination_lon = path[i+1][1];
-                
-            var pointA = new L.LatLng(source_lat, source_lon);
-            var pointB = new L.LatLng(destination_lat, destination_lon);
-            var pointList = [pointA, pointB];
-            
-            var polyline = new L.Polyline(pointList, {
-              color: '#d4222a',
-              weight: 3,
-              opacity: 1,
-              smoothFactor: 1
-              });
-  
-            polyline.addTo(map);
-            best_polylines.push(polyline);
-          }
-        });
-
-        var map = L.map('map').setView([39, -98], 5);
-        var osm_layer = L.tileLayer(layers['osm']);
-        map.addLayer(osm_layer);
-        var current_layer = osm_layer;
-  
-        var icon_city = L.icon({
-          iconUrl: 'static/images/city.png',
-          iconSize: [20, 20], // size of the icon
-          iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-          popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-          });
-  
-        {% for id, properties in cities.items() %}  
-          var marker = L.marker([
-            {{ properties['latitude'] }}, 
-            {{ properties['longitude'] }}], 
-            );
-          
-          marker.bindPopup("{% for property in properties %}\
-          <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-          <input type='hidden' name='id' id='id' value={{ id }}>\
-          <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
-          
-          marker.bindTooltip("{{ properties['name'] }}", {
-            permanent: false, 
-            }
-          );
-          marker.setIcon(icon_city), 
-          marker.addTo(map);
-        {% endfor %}
-      {% else %}
-        var options = {sky:true, atmosphere: true};
-        var earth = new WE.map('earth', options);
-
-        var current_layer = WE.tileLayer(layers['gm']);
-        current_layer.addTo(earth);
-
-        {% for id, properties in cities.items() %}  
-          var marker = WE.marker(
-          [
-          {{ properties['latitude'] }}, 
-          {{ properties['longitude'] }}
-          ],
-          'static/images/city.png', 
-          20, 20
-          ).addTo(earth);
-          
-          marker.bindPopup("{% for property in properties %}\
-          <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-          <input type='hidden' name='id' id='id' value={{ id }}>\
-          <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
-        {% endfor %}
-
-        var polygons = [];
-        socket.on('current_solution', function(path) {
-          for (i = 0; i < polygons.length; i++) { 
-            try {
-              polygons[i].destroy();
-              }
-            catch(err) {};
-            }
-            
-          for (i = 0; i < path.length - 1; i++) { 
-            var source_lat = path[i][0];
-                source_lon = path[i][1];
-                destination_lat = path[i+1][0];
-                destination_lon = path[i+1][1];
-                
-            var polygon = WE.polygon(
-            [
-              [
-              source_lat, 
-              source_lon
-              ],
-              [
-              destination_lat, 
-              destination_lon
-              ],
-              [
-              source_lat, 
-              source_lon
-              ]
-            ], {
-            color: '#0000ff',
-            opacity: 20
-            }
-            ).addTo(earth);
-            polygons.push(polygon)
-          }
-        });
-
-        var best_polygons = [];
-        socket.on('best_solution', function(path) {
-          for (i = 0; i < best_polygons.length; i++) { 
-            try {
-              best_polygons[i].destroy();
-              }
-            catch(err) {};
-            }
-
-          for (i = 0; i < path.length - 1; i++) { 
-            var source_lat = path[i][0];
-                source_lon = path[i][1];
-                destination_lat = path[i+1][0];
-                destination_lon = path[i+1][1];
-                
-            var polygon = WE.polygon(
-            [
-              [
-              source_lat, 
-              source_lon
-              ],
-              [
-              destination_lat, 
-              destination_lon
-              ],
-              [
-              source_lat, 
-              source_lon
-              ]
-            ], {
-            color: '#d4222a',
-            opacity: 20
-            }
-            ).addTo(earth);
-            best_polygons.push(polygon)
-          }
-          
-        });
-      {% endif %}
-    });
-  </script>
 </head>
 <body>
+  <div class="btn-group-vertical" style="z-index:500; position: absolute; top: 10px; right:30px;">
+    <button type="button" class="btn btn-primary" onclick="show_modal('filters')">Parameters</button>
+
+    <div class="btn-group">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tour construction
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a onclick="tourConstruction('nearest_neighbor')"> Nearest neighbor </a></li>
+        <li><a onclick="tourConstruction('nearest_insertion')"> Nearest insertion </a></li>
+      </ul>
+    </div> 
+    
+  </div>
   {% if view == '2D' %}
     <div id="map">
   {% else %}
     <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
   {% endif %}
+  <script>
+  namespace = '/';
+  var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+  function tourConstruction(algorithm){
+      socket.emit(algorithm);
+    }
+
+  /*
+  function tourConstruction(algorithm){
+      window.setInterval(function() {
+        socket.emit(algorithm);
+      }, 10);
+    }
+  */
+  
+  var layers = {
+    'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+    'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
+    'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
+    };
+  
+  {% if view == '2D' %}
+    var polylines = [];
+    socket.on('current_solution', function(path) {
+      for (i = 0; i < polylines.length; i++) { 
+        map.removeLayer(polylines[i]);
+        }
+
+      for (i = 0; i < path.length - 1; i++) { 
+
+        var source_lat = path[i][0];
+            source_lon = path[i][1];
+            
+        var destination_lat = path[i+1][0];
+            destination_lon = path[i+1][1];
+            
+        var pointA = new L.LatLng(source_lat, source_lon);
+        var pointB = new L.LatLng(destination_lat, destination_lon);
+        var pointList = [pointA, pointB];
+        
+        var polyline = new L.Polyline(pointList, {
+          color: '#0000ff',
+          weight: 3,
+          opacity: 1,
+          smoothFactor: 1
+          });
+
+        polyline.addTo(map);
+        polylines.push(polyline);
+      }
+      
+    });
+    
+  socket.on('build_tour', function(path) {
+    console.log(path)
+    for (i = 0; i < polylines.length; i++) { 
+      map.removeLayer(polylines[i]);
+      }
+
+    for (i = 0; i < path.length - 1; i++) { 
+
+      var source_lat = path[i][0];
+          source_lon = path[i][1];
+          
+      var destination_lat = path[i+1][0];
+          destination_lon = path[i+1][1];
+          
+      var pointA = new L.LatLng(source_lat, source_lon);
+      var pointB = new L.LatLng(destination_lat, destination_lon);
+      var pointList = [pointA, pointB];
+      
+      var polyline = new L.Polyline(pointList, {
+        color: '#0000ff',
+        weight: 3,
+        opacity: 1,
+        smoothFactor: 1
+        });
+
+      polyline.addTo(map);
+      polylines.push(polyline);
+    }
+    });
+    
+    var best_polylines = [];
+    socket.on('best_solution', function(path) {
+      for (i = 0; i < best_polylines.length; i++) { 
+        map.removeLayer(best_polylines[i]);
+        }
+
+      for (i = 0; i < path.length - 1; i++) { 
+
+        var source_lat = path[i][0];
+            source_lon = path[i][1];
+            
+        var destination_lat = path[i+1][0];
+            destination_lon = path[i+1][1];
+            
+        var pointA = new L.LatLng(source_lat, source_lon);
+        var pointB = new L.LatLng(destination_lat, destination_lon);
+        var pointList = [pointA, pointB];
+        
+        var polyline = new L.Polyline(pointList, {
+          color: '#d4222a',
+          weight: 3,
+          opacity: 1,
+          smoothFactor: 1
+          });
+
+        polyline.addTo(map);
+        best_polylines.push(polyline);
+      }
+    });
+
+    var map = L.map('map').setView([39, -98], 5);
+    var osm_layer = L.tileLayer(layers['osm']);
+    map.addLayer(osm_layer);
+    var current_layer = osm_layer;
+
+    var icon_city = L.icon({
+      iconUrl: 'static/images/city.png',
+      iconSize: [20, 20], // size of the icon
+      iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
+      popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
+      });
+
+    {% for id, properties in cities.items() %}  
+      var marker = L.marker([
+        {{ properties['latitude'] }}, 
+        {{ properties['longitude'] }}], 
+        );
+      
+      marker.bindPopup("{% for property in properties %}\
+      <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
+      <input type='hidden' name='id' id='id' value={{ id }}>\
+      <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+      
+      marker.bindTooltip("{{ properties['name'] }}", {
+        permanent: false, 
+        }
+      );
+      marker.setIcon(icon_city), 
+      marker.addTo(map);
+    {% endfor %}
+  {% else %}
+    var options = {sky:true, atmosphere: true};
+    var earth = new WE.map('earth', options);
+
+    var current_layer = WE.tileLayer(layers['gm']);
+    current_layer.addTo(earth);
+
+    {% for id, properties in cities.items() %}  
+      var marker = WE.marker(
+      [
+      {{ properties['latitude'] }}, 
+      {{ properties['longitude'] }}
+      ],
+      'static/images/city.png', 
+      20, 20
+      ).addTo(earth);
+      
+      marker.bindPopup("{% for property in properties %}\
+      <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
+      <input type='hidden' name='id' id='id' value={{ id }}>\
+      <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+    {% endfor %}
+
+    var polygons = [];
+    socket.on('current_solution', function(path) {
+      for (i = 0; i < polygons.length; i++) { 
+        try {
+          polygons[i].destroy();
+          }
+        catch(err) {};
+        }
+        
+      for (i = 0; i < path.length - 1; i++) { 
+        var source_lat = path[i][0];
+            source_lon = path[i][1];
+            destination_lat = path[i+1][0];
+            destination_lon = path[i+1][1];
+            
+        var polygon = WE.polygon(
+        [
+          [
+          source_lat, 
+          source_lon
+          ],
+          [
+          destination_lat, 
+          destination_lon
+          ],
+          [
+          source_lat, 
+          source_lon
+          ]
+        ], {
+        color: '#0000ff',
+        opacity: 20
+        }
+        ).addTo(earth);
+        polygons.push(polygon)
+      }
+    });
+
+    var best_polygons = [];
+    socket.on('best_solution', function(path) {
+      for (i = 0; i < best_polygons.length; i++) { 
+        try {
+          best_polygons[i].destroy();
+          }
+        catch(err) {};
+        }
+
+      for (i = 0; i < path.length - 1; i++) { 
+        var source_lat = path[i][0];
+            source_lon = path[i][1];
+            destination_lat = path[i+1][0];
+            destination_lon = path[i+1][1];
+            
+        var polygon = WE.polygon(
+        [
+          [
+          source_lat, 
+          source_lon
+          ],
+          [
+          destination_lat, 
+          destination_lon
+          ],
+          [
+          source_lat, 
+          source_lon
+          ]
+        ], {
+        color: '#d4222a',
+        opacity: 20
+        }
+        ).addTo(earth);
+        best_polygons.push(polygon)
+      }
+
+  var polylines = [];
+        
+  {% endif %}
+
+  </script>
 </body>
 </html>
