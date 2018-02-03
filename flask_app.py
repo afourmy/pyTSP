@@ -1,4 +1,3 @@
-from common_methods import compute_distances
 from threading import Lock
 from flask import Flask, render_template, session, request
 from flask_socketio import emit, SocketIO
@@ -33,8 +32,8 @@ def configure_socket(app):
     return socketio
     
 # import data
-def import_cities(self, path):
-    with open(join(path, 'data', 'cities.json')) as data:    
+def import_cities():
+    with open(join(path_app, 'data', 'cities.json')) as data:    
         for city_dict in load(data):
             if int(city_dict['population']) < 500000:
                 continue
@@ -51,8 +50,9 @@ def create_app(config='config'):
 
     configure_database(app)
     socketio = configure_socket(app)
+    import_cities()
     
-    genetic_algorithm = GeneticAlgorithm(path_app)
+    genetic_algorithm = GeneticAlgorithm()
     return app, socketio, genetic_algorithm
 
 app, socketio, genetic_algorithm = create_app()
@@ -78,7 +78,7 @@ def index():
 
 @socketio.on('send_random')
 def emit_random():
-    fitness_value, solution = genetic_algorithm.generate_solution()
+    fitness_value, solution = genetic_algorithm.cycle()
     if fitness_value < session['best']:
         session['best'] = fitness_value
         emit('best_solution', solution)

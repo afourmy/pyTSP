@@ -1,18 +1,10 @@
+from base_algorithm import BaseAlgorithm
 from random import randrange
 
-class GeneticAlgorithm():
+class GeneticAlgorithm(BaseAlgorithm):
     
-    def __init__(self, distances):
-        self.distances = distances
-
-    ## Fitness function
-
-    # computes the total geographical distance with the haversine formula
-    def fitness(self, solution):
-        total_length = 0
-        for i in range(len(solution)):
-            total_length += self.distances[solution[i]][solution[(i+1)%len(solution)]]
-        return total_length
+    def __init__(self):
+        super().__init__()
     
     ## Mutation methods
 
@@ -41,9 +33,9 @@ class GeneticAlgorithm():
     
     ## Solution generator
     
-    def generate_solution(self):
+    def cycle(self):
         cities = list(self.distances)
-        candidate = sample(cities, self.size)
+        candidate = self.generate_solution()
         mutant = self.two_opt(candidate)
         fitness_value = self.fitness(mutant)
         solution = [(city.latitude, city.longitude) for city in mutant]
