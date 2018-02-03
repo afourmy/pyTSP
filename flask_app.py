@@ -85,8 +85,7 @@ def algorithm(algorithm):
 
 @socketio.on('nearest_neighbor')
 def tour_construction():
-    tours = tc.nearest_neighbor()
-    emit('build_tour', tours[1])
+    emit('build_tour', tc.nearest_neighbor())
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():

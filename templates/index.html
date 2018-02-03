@@ -103,7 +103,11 @@
       
     });
     
-  socket.on('build_tour', function(path) {
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+    
+  socket.on('build_tour', async function(path) {
     console.log(path)
     for (i = 0; i < polylines.length; i++) { 
       map.removeLayer(polylines[i]);
@@ -130,6 +134,7 @@
 
       polyline.addTo(map);
       polylines.push(polyline);
+      await sleep(100);
     }
     });
     

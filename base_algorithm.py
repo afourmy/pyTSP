@@ -6,12 +6,12 @@ from random import sample
 def haversine_distance(cityA, cityB):
     coords = (*coordinates[cityA], *coordinates[cityB])
     # we convert from decimal degree to radians
-    lon_cityA, lat_cityA, lon_cityB, lat_cityB = map(radians, coords)
+    lat_cityA, lon_cityA, lat_cityB, lon_cityB = map(radians, coords)
     delta_lon = lon_cityB - lon_cityA 
     delta_lat = lat_cityB - lat_cityA
     # haversine function
     hav = lambda t: sin(t/2)**2
-    a = hav(delta_lat) + cos(lat_cityA) * cos(lat_cityB) * hav(delta_lat)
+    a = hav(delta_lat) + cos(lat_cityA) * cos(lat_cityB) * hav(delta_lon)
     c = 2 * asin(sqrt(a)) 
     # approximate radius of the Earth: 6371 km
     return c*6371
@@ -42,3 +42,7 @@ class BaseAlgorithm():
             length = distances[solution[i]][solution[(i+1)%len(solution)]]
             total_length += length
         return total_length
+    
+    def format_solution(self, solution):
+        solution = solution + [solution[0]]
+        return [coordinates[city] for city in solution]

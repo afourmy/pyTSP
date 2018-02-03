@@ -4,7 +4,7 @@ from sqlalchemy import Column,Integer, String, Float
 class City(Base):
     
     __tablename__ = 'City'
-    properties = ('name', 'longitude', 'latitude', 'population')
+    properties = ('id', 'name', 'longitude', 'latitude', 'population')
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
