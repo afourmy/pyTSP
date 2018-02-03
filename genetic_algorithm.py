@@ -1,4 +1,4 @@
-from base_algorithm import BaseAlgorithm
+from base_algorithm import BaseAlgorithm, coordinates, distances
 from random import randrange
 
 class GeneticAlgorithm(BaseAlgorithm):
@@ -22,8 +22,8 @@ class GeneticAlgorithm(BaseAlgorithm):
             for edgeA in edges:
                 for edgeB in edges:
                     (a, b), (c, d) = edgeA, edgeB
-                    ab, cd = self.distances[a][b], self.distances[c][d]
-                    ac, bd = self.distances[a][c], self.distances[b][d]
+                    ab, cd = distances[a][b], distances[c][d]
+                    ac, bd = distances[a][c], distances[b][d]
                     if ab + cd > ac + bd:
                         for index, city in enumerate(solution):
                             if city in (b, c):
@@ -34,10 +34,9 @@ class GeneticAlgorithm(BaseAlgorithm):
     ## Solution generator
     
     def cycle(self):
-        cities = list(self.distances)
         candidate = self.generate_solution()
         mutant = self.two_opt(candidate)
-        fitness_value = self.fitness(mutant)
-        solution = [(city.latitude, city.longitude) for city in mutant]
+        fitness_value = self.compute_length(mutant)
+        solution = [coordinates[city] for city in mutant]
         full_solution = solution + [solution[0]] 
         return fitness_value, full_solution

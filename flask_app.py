@@ -88,5 +88,6 @@ def emit_random():
 if __name__ == '__main__':
     socketio.run(
         app, 
-        port = int(environ.get('PORT', 5100))
+        port = int(environ.get('PORT', 5100)),
+        use_reloader = False
         )
