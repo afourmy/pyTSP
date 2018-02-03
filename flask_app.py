@@ -1,8 +1,11 @@
+from common_methods import compute_distances
 from threading import Lock
 from flask import Flask, render_template, session, request
 from flask_socketio import emit, SocketIO
+from json import load
 from os import environ
-from os.path import abspath, dirname
+from os.path import abspath, dirname, join
+from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
 
 # prevent python from writing *.pyc files / __pycache__ folders
@@ -14,33 +17,45 @@ if path_app not in path:
 
 from database import db, create_database
 from models import City
-from TSP import TravelingSalesmanProblem
-
-def register_extensions(app):
-    db.init_app(app)
+from genetic_algorithm import GeneticAlgorithm
 
 def configure_database(app):
     create_database()
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
+    db.init_app(app)
 
 def configure_socket(app):
     async_mode, thread = None, None
     socketio = SocketIO(app, async_mode=async_mode)
     thread_lock = Lock()
     return socketio
+    
+# import data
+def import_cities(self, path):
+    with open(join(path, 'data', 'cities.json')) as data:    
+        for city_dict in load(data):
+            if int(city_dict['population']) < 500000:
+                continue
+            city = City(**city_dict)
+            db.session.add(city)
+        try:
+            db.session.commit()
+        except sql_exception.IntegrityError:
+            db.session.rollback()
 
 def create_app(config='config'):
     app = Flask(__name__)
     app.config.from_object('config')
-    register_extensions(app)
+
     configure_database(app)
     socketio = configure_socket(app)
-    tsp = TravelingSalesmanProblem(path_app)
-    return app, socketio, tsp
+    
+    genetic_algorithm = GeneticAlgorithm(path_app)
+    return app, socketio, genetic_algorithm
 
-app, socketio, tsp = create_app()
+app, socketio, genetic_algorithm = create_app()
 
 ## Views
 
@@ -63,7 +78,7 @@ def index():
 
 @socketio.on('send_random')
 def emit_random():
-    fitness_value, solution = tsp.generate_solution()
+    fitness_value, solution = genetic_algorithm.generate_solution()
     if fitness_value < session['best']:
         session['best'] = fitness_value
         emit('best_solution', solution)
