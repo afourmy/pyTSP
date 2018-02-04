@@ -53,28 +53,26 @@
     <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
   {% endif %}
   <script>
-  namespace = '/';
-  var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-  function tourConstruction(algorithm){
-      socket.emit(algorithm);
-    }
-
-  /*
-  function tourConstruction(algorithm){
-      window.setInterval(function() {
+    namespace = '/';
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    function tourConstruction(algorithm){
         socket.emit(algorithm);
-      }, 10);
-    }
-  */
+      }
   
-  var layers = {
-    'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-    'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
-    'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
-    };
-  
-  {% if view == '2D' %}
-  
+    /*
+    function tourConstruction(algorithm){
+        window.setInterval(function() {
+          socket.emit(algorithm);
+        }, 10);
+      }
+    */
+    
+    var layers = {
+      'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
+      'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
+      };
+      
     // lines of the path displayed
     var polylines = [];
     // lines of the best path ever found (for genetic algorithm)
@@ -84,215 +82,188 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-    /* Function to create a path, with an optinal argument: waiting time
-    between the creation of two edges for better visualization of tour 
-    construction heuristics */
+    {% if view == '2D' %}
     
-    async function createPath(path, waitingTime=false, best=false){
-      for (i = 0; i < polylines.length; i++) { 
-        map.removeLayer(polylines[i]);
-        }
+      var map = L.map('map').setView([39, -98], 5);
+      var osm_layer = L.tileLayer(layers['osm']);
+      map.addLayer(osm_layer);
+      var current_layer = osm_layer;
   
-      for (i = 0; i < path.length - 1; i++) { 
+      var icon_city = L.icon({
+        iconUrl: 'static/images/city.png',
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
+        popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
+        });
   
-        var source_lat = path[i][0];
-            source_lon = path[i][1];
-            
-        var destination_lat = path[i+1][0];
-            destination_lon = path[i+1][1];
-            
-        var pointA = new L.LatLng(source_lat, source_lon);
-        var pointB = new L.LatLng(destination_lat, destination_lon);
-        var pointList = [pointA, pointB];
+      {% for id, properties in cities.items() %}  
+        var marker = L.marker([
+          {{ properties['latitude'] }}, 
+          {{ properties['longitude'] }}], 
+          );
         
-        var color = best ? '#d4222a' : '#0000ff';
-        var polyline = new L.Polyline(pointList, {
-          color: color,
-          weight: 3,
-          opacity: 1,
-          smoothFactor: 1
-          });
-  
-        polyline.addTo(map);
-        polylines.push(polyline);
+        marker.bindPopup("{% for property in properties %}\
+        <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
+        <input type='hidden' name='id' id='id' value={{ id }}>\
+        <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
         
-        if (waitingTime) {
-          var speed = $('#speed').val();
-          await sleep(speed);
+        marker.bindTooltip("{{ properties['name'] }}", {
+          permanent: false, 
           }
-        }
-    }
-    
-    socket.on('current_solution', function(path) {
-      createPath(path);
-      });
-  
-    socket.on('build_tour', function(path) {
-      createPath(path, true);
-      });
-    
-    
-    socket.on('best_solution', function(path) {
-      for (i = 0; i < best_polylines.length; i++) { 
-        map.removeLayer(best_polylines[i]);
-        }
-
-      for (i = 0; i < path.length - 1; i++) { 
-
-        var source_lat = path[i][0];
-            source_lon = path[i][1];
-            
-        var destination_lat = path[i+1][0];
-            destination_lon = path[i+1][1];
-            
-        var pointA = new L.LatLng(source_lat, source_lon);
-        var pointB = new L.LatLng(destination_lat, destination_lon);
-        var pointList = [pointA, pointB];
-        
-        var polyline = new L.Polyline(pointList, {
-          color: '#d4222a',
-          weight: 3,
-          opacity: 1,
-          smoothFactor: 1
-          });
-
-        polyline.addTo(map);
-        best_polylines.push(polyline);
-      }
-    });
-
-    var map = L.map('map').setView([39, -98], 5);
-    var osm_layer = L.tileLayer(layers['osm']);
-    map.addLayer(osm_layer);
-    var current_layer = osm_layer;
-
-    var icon_city = L.icon({
-      iconUrl: 'static/images/city.png',
-      iconSize: [20, 20], // size of the icon
-      iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-      popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-      });
-
-    {% for id, properties in cities.items() %}  
-      var marker = L.marker([
-        {{ properties['latitude'] }}, 
-        {{ properties['longitude'] }}], 
         );
+        marker.setIcon(icon_city), 
+        marker.addTo(map);
+      {% endfor %}
       
-      marker.bindPopup("{% for property in properties %}\
-      <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-      <input type='hidden' name='id' id='id' value={{ id }}>\
-      <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+      /* Function to create a path, with an optinal argument: waiting time
+      between the creation of two edges for better visualization of tour 
+      construction heuristics */
       
-      marker.bindTooltip("{{ properties['name'] }}", {
-        permanent: false, 
-        }
-      );
-      marker.setIcon(icon_city), 
-      marker.addTo(map);
-    {% endfor %}
-  {% else %}
-    var options = {sky:true, atmosphere: true};
-    var earth = new WE.map('earth', options);
-
-    var current_layer = WE.tileLayer(layers['gm']);
-    current_layer.addTo(earth);
-
-    {% for id, properties in cities.items() %}  
-      var marker = WE.marker(
-      [
-      {{ properties['latitude'] }}, 
-      {{ properties['longitude'] }}
-      ],
-      'static/images/city.png', 
-      20, 20
-      ).addTo(earth);
-      
-      marker.bindPopup("{% for property in properties %}\
-      <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-      <input type='hidden' name='id' id='id' value={{ id }}>\
-      <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
-    {% endfor %}
-
-    var polygons = [];
-    socket.on('current_solution', function(path) {
-      for (i = 0; i < polygons.length; i++) { 
-        try {
-          polygons[i].destroy();
+      async function createPath(path, waitingTime, best){
+        for (i = 0; i < polylines.length; i++) { 
+          map.removeLayer(polylines[i]);
           }
-        catch(err) {};
-        }
-        
-      for (i = 0; i < path.length - 1; i++) { 
-        var source_lat = path[i][0];
-            source_lon = path[i][1];
-            destination_lat = path[i+1][0];
-            destination_lon = path[i+1][1];
-            
-        var polygon = WE.polygon(
-        [
-          [
-          source_lat, 
-          source_lon
-          ],
-          [
-          destination_lat, 
-          destination_lon
-          ],
-          [
-          source_lat, 
-          source_lon
-          ]
-        ], {
-        color: '#0000ff',
-        opacity: 20
-        }
-        ).addTo(earth);
-        polygons.push(polygon)
-      }
-    });
-
-    var best_polygons = [];
-    socket.on('best_solution', function(path) {
-      for (i = 0; i < best_polygons.length; i++) { 
-        try {
-          best_polygons[i].destroy();
+    
+        for (i = 0; i < path.length - 1; i++) { 
+    
+          var source_lat = path[i][0];
+              source_lon = path[i][1];
+              
+          var destination_lat = path[i+1][0];
+              destination_lon = path[i+1][1];
+              
+          var pointA = new L.LatLng(source_lat, source_lon);
+          var pointB = new L.LatLng(destination_lat, destination_lon);
+          var pointList = [pointA, pointB];
+          
+          var color = best ? '#d4222a' : '#0000ff';
+          var polyline = new L.Polyline(pointList, {
+            color: color,
+            weight: 3,
+            opacity: 1,
+            smoothFactor: 1
+            });
+    
+          polyline.addTo(map);
+          polylines.push(polyline);
+          
+          if (waitingTime) {
+            var speed = $('#speed').val();
+            await sleep(speed);
+            }
           }
-        catch(err) {};
-        }
-
-      for (i = 0; i < path.length - 1; i++) { 
-        var source_lat = path[i][0];
-            source_lon = path[i][1];
-            destination_lat = path[i+1][0];
-            destination_lon = path[i+1][1];
-            
-        var polygon = WE.polygon(
-        [
-          [
-          source_lat, 
-          source_lon
-          ],
-          [
-          destination_lat, 
-          destination_lon
-          ],
-          [
-          source_lat, 
-          source_lon
-          ]
-        ], {
-        color: '#d4222a',
-        opacity: 20
-        }
-        ).addTo(earth);
-        best_polygons.push(polygon)
       }
-
-  var polylines = [];
+      
+      socket.on('current_solution', function(path) {
+        createPath(path, false, false);
+        });
+    
+      socket.on('build_tour', function(path) {
+        createPath(path, true, false);
+        });
+  
+      socket.on('best_solution', function(path) {
+        createPath(path, false, true);
+      });
+  
+    {% else %}
+  
+      var options = {sky:true, atmosphere: true};
+      var earth = new WE.map('earth', options);
+  
+      var current_layer = WE.tileLayer(layers['gm']);
+      current_layer.addTo(earth);
+  
+      {% for id, properties in cities.items() %}  
+        var marker = WE.marker(
+        [
+        {{ properties['latitude'] }}, 
+        {{ properties['longitude'] }}
+        ],
+        'static/images/city.png', 
+        20, 20
+        ).addTo(earth);
         
-  {% endif %}
+        marker.bindPopup("{% for property in properties %}\
+        <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
+        <input type='hidden' name='id' id='id' value={{ id }}>\
+        <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+      {% endfor %}
 
+      socket.on('current_solution', function(path) {
+        for (i = 0; i < polylines.length; i++) { 
+          try {
+            polylines[i].destroy();
+            }
+          catch(err) {};
+          }
+          
+        for (i = 0; i < path.length - 1; i++) { 
+          var source_lat = path[i][0];
+              source_lon = path[i][1];
+              destination_lat = path[i+1][0];
+              destination_lon = path[i+1][1];
+              
+          var polygon = WE.polygon(
+          [
+            [
+            source_lat, 
+            source_lon
+            ],
+            [
+            destination_lat, 
+            destination_lon
+            ],
+            [
+            source_lat, 
+            source_lon
+            ]
+          ], {
+          color: '#0000ff',
+          opacity: 20
+          }
+          ).addTo(earth);
+          polylines.push(polygon)
+        }
+      });
+
+      socket.on('best_solution', function(path) {
+        for (i = 0; i < best_polylines.length; i++) { 
+          try {
+            best_polylines[i].destroy();
+            }
+          catch(err) {};
+          }
+  
+        for (i = 0; i < path.length - 1; i++) { 
+          var source_lat = path[i][0];
+              source_lon = path[i][1];
+              destination_lat = path[i+1][0];
+              destination_lon = path[i+1][1];
+              
+          var polygon = WE.polygon(
+          [
+            [
+            source_lat, 
+            source_lon
+            ],
+            [
+            destination_lat, 
+            destination_lon
+            ],
+            [
+            source_lat, 
+            source_lon
+            ]
+          ], {
+          color: '#d4222a',
+          opacity: 20
+          }
+          ).addTo(earth);
+          best_polylines.push(polygon)
+        }
+
+    {% endif %}
   </script>
 </body>
 </html>
