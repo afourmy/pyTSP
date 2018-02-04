@@ -1,5 +1,5 @@
 from threading import Lock
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, render_template, request, session
 from flask_socketio import emit, SocketIO
 from json import load
 from os import environ
@@ -61,20 +61,13 @@ tc = TourConstruction()
 
 ## Views
 
-@app.route('/')
-def base_redirection():
-    return redirect(url_for('algorithm', algorithm='tour_construction'))
-
-@app.route('/<algorithm>')
-def algorithm(algorithm):
+@app.route('/', methods = ['GET', 'POST'])
+def algorithm():
     session['best'] = float('inf')
-    view = '2D'
-    if 'view' in request.form:
-        view = request.form['view']
+    view = request.form['view'] if 'view' in request.form else '2D'
     print(request.form)
     return render_template(
         'index.html',
-        algorithm = algorithm,
         minimum_population = 500000,
         view = view,
         cities = {
