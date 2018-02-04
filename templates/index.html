@@ -36,6 +36,29 @@
 </head>
 <body>
 
+  <form id="aform" method="post">
+    <div class="btn-group-vertical" style="z-index:500; position: absolute; top: 20px; left:20px;">
+      <button type="button" class="btn btn-primary" onclick="show_modal('filters')">Parameters</button>
+  
+      {% if view == '2D' %}
+        <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
+      {% else %}
+        <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
+      {% endif %}
+      
+      <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
+          <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
+          <li><a onclick="switch_layer('nasa')"> NASA </a></li>
+        </ul>
+      </div> 
+    </div>
+  </form>
+
   <div class="panel panel-primary panel-transparent" style="z-index:500; position: absolute; top: 20px; right:20px;">
     <div class="panel-heading">Construction heuristics</div>
     <div class="panel-body">
@@ -127,6 +150,12 @@
         marker.addTo(map);
       {% endfor %}
       
+      function switch_layer(layer){
+        map.removeLayer(current_layer);
+        current_layer = L.tileLayer(layers[layer]);
+        map.addLayer(current_layer);
+        }
+      
       /* Function to create a path, with an optinal argument: waiting time
       between the creation of two edges for better visualization of tour 
       construction heuristics */
@@ -190,6 +219,12 @@
         <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
       {% endfor %}
       
+      function switch_layer(layer){
+        current_layer.removeFrom(earth);
+        current_layer = WE.tileLayer(layers[layer]);
+        current_layer.addTo(earth);
+        }
+      
       async function createPath(path, waitingTime, best){
         for (i = 0; i < polylines.length; i++) { 
           try {
@@ -215,79 +250,6 @@
             await sleep(speed);
             }
           }
-        }
-
-      socket.on('current_solution', function(path) {
-        for (i = 0; i < polylines.length; i++) { 
-          try {
-            polylines[i].destroy();
-            }
-          catch(err) {};
-          }
-          
-        for (i = 0; i < path.length - 1; i++) { 
-          var source_lat = path[i][0];
-              source_lon = path[i][1];
-              destination_lat = path[i+1][0];
-              destination_lon = path[i+1][1];
-              
-          var polygon = WE.polygon(
-          [
-            [
-            source_lat, 
-            source_lon
-            ],
-            [
-            destination_lat, 
-            destination_lon
-            ],
-            [
-            source_lat, 
-            source_lon
-            ]
-          ], {
-          color: '#0000ff',
-          opacity: 20
-          }
-          ).addTo(earth);
-          polylines.push(polygon)
-        }
-      });
-
-      socket.on('best_solution', function(path) {
-        for (i = 0; i < best_polylines.length; i++) { 
-          try {
-            best_polylines[i].destroy();
-            }
-          catch(err) {};
-          }
-  
-        for (i = 0; i < path.length - 1; i++) { 
-          var source_lat = path[i][0];
-              source_lon = path[i][1];
-              destination_lat = path[i+1][0];
-              destination_lon = path[i+1][1];
-              
-          var polygon = WE.polygon(
-          [
-            [
-            source_lat, 
-            source_lon
-            ],
-            [
-            destination_lat, 
-            destination_lon
-            ],
-            [
-            source_lat, 
-            source_lon
-            ]
-          ], {
-          color: '#d4222a',
-          opacity: 20
-          }
-          ).addTo(earth);
-          best_polylines.push(polygon)
         }
 
     {% endif %}
