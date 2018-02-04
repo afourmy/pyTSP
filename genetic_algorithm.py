@@ -12,24 +12,8 @@ class GeneticAlgorithm(BaseAlgorithm):
     def random_swap(self, solution):
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
-    
-    # 2-opt
-    def two_opt(self, solution):
-        stable = False
-        while not stable:
-            stable = True
-            edges = zip(solution, solution[1:] + [solution[0]])
-            for edgeA in edges:
-                for edgeB in edges:
-                    (a, b), (c, d) = edgeA, edgeB
-                    ab, cd = distances[a][b], distances[c][d]
-                    ac, bd = distances[a][c], distances[b][d]
-                    if ab + cd > ac + bd:
-                        for index, city in enumerate(solution):
-                            if city in (b, c):
-                                solution[index] = c if city == b else b
-                            stable = False
-        return solution
+
+    ## Crossover methods
     
     ## Solution generator
     
