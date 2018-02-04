@@ -82,6 +82,18 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     
+    socket.on('current_solution', function(path) {
+      createPath(path, false, false);
+      });
+  
+    socket.on('build_tour', function(path) {
+      createPath(path, true, false);
+      });
+
+    socket.on('best_solution', function(path) {
+      createPath(path, false, true);
+    });
+    
     {% if view == '2D' %}
     
       var map = L.map('map').setView([39, -98], 5);
@@ -124,6 +136,7 @@
           map.removeLayer(polylines[i]);
           }
     
+        var color = best ? '#d4222a' : '#0000ff';
         for (i = 0; i < path.length - 1; i++) { 
     
           var source_lat = path[i][0];
@@ -135,8 +148,7 @@
           var pointA = new L.LatLng(source_lat, source_lon);
           var pointB = new L.LatLng(destination_lat, destination_lon);
           var pointList = [pointA, pointB];
-          
-          var color = best ? '#d4222a' : '#0000ff';
+
           var polyline = new L.Polyline(pointList, {
             color: color,
             weight: 3,
@@ -152,20 +164,8 @@
             await sleep(speed);
             }
           }
-      }
-      
-      socket.on('current_solution', function(path) {
-        createPath(path, false, false);
-        });
-    
-      socket.on('build_tour', function(path) {
-        createPath(path, true, false);
-        });
-  
-      socket.on('best_solution', function(path) {
-        createPath(path, false, true);
-      });
-  
+        }
+
     {% else %}
   
       var options = {sky:true, atmosphere: true};
@@ -189,6 +189,33 @@
         <input type='hidden' name='id' id='id' value={{ id }}>\
         <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
       {% endfor %}
+      
+      async function createPath(path, waitingTime, best){
+        for (i = 0; i < polylines.length; i++) { 
+          try {
+            polylines[i].destroy();
+            }
+          catch(err) {};
+          }
+          
+        var color = best ? '#d4222a' : '#0000ff';
+        for (i = 0; i < path.length - 1; i++) { 
+          var source_lat = path[i][0];
+              source_lon = path[i][1];
+              destination_lat = path[i+1][0];
+              destination_lon = path[i+1][1];
+              
+          var polygon = WE.polygon(
+            [[source_lat, source_lon], [destination_lat, destination_lon],
+            [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
+          polylines.push(polygon)
+          
+          if (waitingTime) {
+            var speed = $('#speed').val();
+            await sleep(speed);
+            }
+          }
+        }
 
       socket.on('current_solution', function(path) {
         for (i = 0; i < polylines.length; i++) { 
