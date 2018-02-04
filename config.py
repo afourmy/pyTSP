@@ -1,7 +1,7 @@
 from os.path import abspath, dirname, join
 
 basedir = abspath(dirname(__file__))
-DEBUG = False
+DEBUG = True
 SECRET_KEY = 'key'
 
 # SQL Alchemy

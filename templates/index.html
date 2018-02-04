@@ -18,6 +18,10 @@
       #earth {
           min-height: 100%; 
       }
+      
+    .panel-transparent {
+        background: none;
+    }
   </style>
   <!-- jQuery -->
   <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
@@ -31,20 +35,18 @@
   {% endif %}
 </head>
 <body>
-  <div class="btn-group-vertical" style="z-index:500; position: absolute; top: 10px; right:30px;">
-    <button type="button" class="btn btn-primary" onclick="show_modal('filters')">Parameters</button>
 
-    <div class="btn-group">
-      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tour construction
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a onclick="tourConstruction('nearest_neighbor')"> Nearest neighbor </a></li>
-        <li><a onclick="tourConstruction('nearest_insertion')"> Nearest insertion </a></li>
-      </ul>
-    </div> 
-    
+  <div class="panel panel-primary panel-transparent" style="z-index:500; position: absolute; top: 20px; right:20px;">
+    <div class="panel-heading">Construction heuristics</div>
+    <div class="panel-body">
+      <div class="btn-group-vertical btn-block" >
+        <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
+        <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+      </div>
+      <input id="speed" type="text" class="form-control" placeholder="Waiting time (ms)">
+    </div>
   </div>
+
   {% if view == '2D' %}
     <div id="map">
   {% else %}
@@ -72,14 +74,27 @@
     };
   
   {% if view == '2D' %}
+  
+    // lines of the path displayed
     var polylines = [];
-    socket.on('current_solution', function(path) {
+    // lines of the best path ever found (for genetic algorithm)
+    var best_polylines = [];
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /* Function to create a path, with an optinal argument: waiting time
+    between the creation of two edges for better visualization of tour 
+    construction heuristics */
+    
+    async function createPath(path, waitingTime=false, best=false){
       for (i = 0; i < polylines.length; i++) { 
         map.removeLayer(polylines[i]);
         }
-
+  
       for (i = 0; i < path.length - 1; i++) { 
-
+  
         var source_lat = path[i][0];
             source_lon = path[i][1];
             
@@ -90,55 +105,33 @@
         var pointB = new L.LatLng(destination_lat, destination_lon);
         var pointList = [pointA, pointB];
         
+        var color = best ? '#d4222a' : '#0000ff';
         var polyline = new L.Polyline(pointList, {
-          color: '#0000ff',
+          color: color,
           weight: 3,
           opacity: 1,
           smoothFactor: 1
           });
-
+  
         polyline.addTo(map);
         polylines.push(polyline);
-      }
-      
-    });
-    
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-    
-  socket.on('build_tour', async function(path) {
-    console.log(path)
-    for (i = 0; i < polylines.length; i++) { 
-      map.removeLayer(polylines[i]);
-      }
-
-    for (i = 0; i < path.length - 1; i++) { 
-
-      var source_lat = path[i][0];
-          source_lon = path[i][1];
-          
-      var destination_lat = path[i+1][0];
-          destination_lon = path[i+1][1];
-          
-      var pointA = new L.LatLng(source_lat, source_lon);
-      var pointB = new L.LatLng(destination_lat, destination_lon);
-      var pointList = [pointA, pointB];
-      
-      var polyline = new L.Polyline(pointList, {
-        color: '#0000ff',
-        weight: 3,
-        opacity: 1,
-        smoothFactor: 1
-        });
-
-      polyline.addTo(map);
-      polylines.push(polyline);
-      await sleep(100);
+        
+        if (waitingTime) {
+          var speed = $('#speed').val();
+          await sleep(speed);
+          }
+        }
     }
-    });
     
-    var best_polylines = [];
+    socket.on('current_solution', function(path) {
+      createPath(path);
+      });
+  
+    socket.on('build_tour', function(path) {
+      createPath(path, true);
+      });
+    
+    
     socket.on('best_solution', function(path) {
       for (i = 0; i < best_polylines.length; i++) { 
         map.removeLayer(best_polylines[i]);
