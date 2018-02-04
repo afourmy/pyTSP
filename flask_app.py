@@ -68,11 +68,15 @@ def base_redirection():
 @app.route('/<algorithm>')
 def algorithm(algorithm):
     session['best'] = float('inf')
+    view = '2D'
+    if 'view' in request.form:
+        view = request.form['view']
+    print(request.form)
     return render_template(
         'index.html',
         algorithm = algorithm,
         minimum_population = 500000,
-        view = '2D',
+        view = view,
         cities = {
             city.id: {
                 property: getattr(city, property)
