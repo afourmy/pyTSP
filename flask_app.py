@@ -55,9 +55,11 @@ app, socketio = create_app()
 
 from genetic_algorithm import GeneticAlgorithm
 from tour_construction import TourConstruction
+from optimization_algorithm import OptimizationAlgorithm
 
 ga = GeneticAlgorithm()
 tc = TourConstruction()
+oa = OptimizationAlgorithm()
 
 ## Views
 
@@ -85,6 +87,10 @@ def nearest_neighbor():
     emit('build_tour', tc.nearest_neighbor())
 
 @socketio.on('nearest_insertion')
+def nearest_insertion():
+    emit('build_tour', tc.nearest_insertion())
+    
+@socketio.on('2opt')
 def nearest_insertion():
     emit('build_tour', tc.nearest_insertion())
 
