@@ -4,6 +4,9 @@
   <title>TSP 2D/3D GIS visualization</title>
   <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Bootstrap slider -->
+  <link href="{{ url_for('static', filename='bootstrap-slider/bootstrap-slider.min.css') }}" rel="stylesheet"></script>
+  <!-- Leaflet -->
   <link href="{{ url_for('static', filename='leaflet/leaflet.css') }}" rel="stylesheet">
   <style type="text/css">
       html, body {
@@ -19,14 +22,29 @@
           min-height: 100%; 
       }
       
+      #slider-css .slider-selection {
+        background: #BABABA;
+      }
+      
     .panel-transparent {
         background: none;
+    }
+    
+    .slider.slider-horizontal{
+    width:10vw !important;
+    }
+    
+    .well {
+      background-color: rgba(245, 245, 245, 0.5);
     }
   </style>
   <!-- jQuery -->
   <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
   <!-- Bootstrap -->
   <script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+  <!-- Bootstrap slider -->
+  <script src="{{ url_for('static', filename='bootstrap-slider/bootstrap-slider.min.js') }}"></script>
+  <!-- Socket IO -->
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
   {% if view == '2D' %}
     <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
@@ -37,7 +55,7 @@
 <body>
 
   <form id="aform" method="post">
-    <div class="btn-group-vertical" style="z-index:500; position: absolute; top: 20px; left:20px;">  
+    <div class="btn-group-vertical" style="z-index:500; position: absolute; top: 10px; left:70px;">  
       {% if view == '2D' %}
         <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
       {% else %}
@@ -56,15 +74,33 @@
       </div> 
     </div>
   </form>
-
-  <div class="panel panel-primary panel-transparent" style="z-index:500; position: absolute; top: 20px; right:20px;">
-    <div class="panel-heading">Construction heuristics</div>
-    <div class="panel-body">
-      <div class="btn-group-vertical btn-block" >
-        <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
-        <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+  
+  <div class="well well-sm" style="z-index:500; position: absolute; top: 20px; right:50vw; height:40px">
+    <strong><font color="red"><p id="score">Length</p></font></strong>
+  </div>
+  
+  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
+  
+    <div class="panel panel-primary panel-transparent">
+      <div class="panel-heading">Construction heuristics</div>
+      <div class="panel-body">
+        <div class="btn-group-vertical btn-block" >
+          <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
+          <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+          <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="1000"/>
+        </div>
       </div>
-      <input id="speed" type="text" class="form-control" placeholder="Waiting time (ms)">
+    </div>
+
+    <div class="panel panel-primary panel-transparent">
+      <div class="panel-heading">Optimization heuristics</div>
+      <div class="panel-body">
+        <div class="btn-group-vertical btn-block" >
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('2opt')">2opt</button>
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('3opt')">3opt</button>
+          <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="100"/>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -76,18 +112,30 @@
   <script>
     namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    var currentAlgorithm = undefined;
+
     function tourConstruction(algorithm){
+        if (window.optimizationTimer) {
+          clearAll();
+          clearTimeout(window.optimizationTimer);
+          window.optimizationTimer = 0;
+          }
         socket.emit(algorithm);
       }
-  
-    /*
-    function tourConstruction(algorithm){
-        window.setInterval(function() {
+
+    function optimizationAlgorithm(algorithm) {
+      // we cannot use setInterval as the timer depends on the slider
+      // we have to use setTimeout for the speed to vary through time
+      function timeout() {
+        var speed = $('#slider2').val();
+        window.optimizationTimer = setTimeout(function () {
           socket.emit(algorithm);
-        }, 10);
+          timeout();
+          }, 50000/speed);
+        };
+      timeout();
       }
-    */
-    
+
     var layers = {
       'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
@@ -97,7 +145,7 @@
     // lines of the path displayed
     var polylines = [];
     // lines of the best path ever found (for genetic algorithm)
-    var best_polylines = [];
+    var bestPolylines = [];
     
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -107,14 +155,35 @@
       createPath(path, false, false);
       });
   
-    socket.on('build_tour', function(path) {
+    socket.on('build_tour', function(path, length) {
       createPath(path, true, false);
+      $("#score").text(Math.round(Number(length)));
+      });
+      
+    socket.on('build_tours', function(paths, length) {
+      createIntermediatePaths(paths, false, false);
+      $("#score").text(Math.round(Number(length)));
       });
 
-    socket.on('best_solution', function(path) {
+    socket.on('best_solution', function(path, best_length) {
+      $("#score").text(Math.round(Number(best_length)));
       createPath(path, false, true);
+      });
+      
+    $('#slider1').slider({
+      tooltip_position: 'bottom',
+      formatter: function(value) {
+        return 'Speed';
+      }
     });
     
+    $('#slider2').slider({
+      tooltip_position: 'bottom',
+      formatter: function(value) {
+        return 'Speed';
+      }
+    });
+
     {% if view == '2D' %}
     
       var map = L.map('map').setView([39, -98], 5);
@@ -154,16 +223,29 @@
         map.addLayer(current_layer);
         }
       
+      // Function that clears all lines
+      function clearAll(){
+        for (i = 0; i < polylines.length; i++) { 
+          map.removeLayer(polylines[i]);
+          }
+
+        for (i = 0; i < bestPolylines.length; i++) { 
+          map.removeLayer(bestPolylines[i]);
+          }
+        }
+      
       /* Function to create a path, with an optinal argument: waiting time
       between the creation of two edges for better visualization of tour 
       construction heuristics */
       
       async function createPath(path, waitingTime, best){
-        for (i = 0; i < polylines.length; i++) { 
-          map.removeLayer(polylines[i]);
-          }
-    
+      
         var color = best ? '#d4222a' : '#0000ff';
+        var lines = best ? bestPolylines : polylines;
+        for (i = 0; i < lines.length; i++) { 
+          map.removeLayer(lines[i]);
+          }
+
         for (i = 0; i < path.length - 1; i++) { 
     
           var source_lat = path[i][0];
@@ -184,12 +266,20 @@
             });
     
           polyline.addTo(map);
-          polylines.push(polyline);
+          lines.push(polyline);
           
           if (waitingTime) {
-            var speed = $('#speed').val();
-            await sleep(speed);
+            var speed = $('#slider1').val();
+            await sleep(50000/speed);
             }
+          }
+        }
+        
+      async function createIntermediatePaths(paths, best){
+        for (j = 0; j < paths.length; j++) {
+          createPath(paths[j], false, best);
+          var speed = $('#slider1').val();
+          await sleep(50000/speed);
           }
         }
 

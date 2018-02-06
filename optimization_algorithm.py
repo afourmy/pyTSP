@@ -22,5 +22,5 @@ class OptimizationAlgorithm(BaseAlgorithm):
                             if city in (b, c):
                                 solution[index] = c if city == b else b
                             stable = False
-        return self.format_solution(solution)
+        return self.compute_length(solution), self.format_solution(solution)
 

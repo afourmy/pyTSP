@@ -88,11 +88,23 @@ def nearest_neighbor():
 
 @socketio.on('nearest_insertion')
 def nearest_insertion():
-    emit('build_tour', tc.nearest_insertion())
+    emit('build_tours', tc.nearest_insertion())
+
+def optimization(function):
+    length, solution = getattr(oa, function)()
+    if length < session['best']:
+        session['best'] = length
+        emit('best_solution', (solution, length))
+    else:
+        emit('current_solution', solution)
     
 @socketio.on('2opt')
-def nearest_insertion():
-    emit('build_tour', tc.nearest_insertion())
+def two_opt():
+    optimization('two_opt')
+
+@socketio.on('3opt')
+def three_opt():
+    optimization('three_opt')
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():
