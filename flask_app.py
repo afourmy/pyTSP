@@ -96,7 +96,7 @@ def optimization(function):
         session['best'] = length
         emit('best_solution', (solution, length))
     else:
-        emit('current_solution', solution)
+        emit('current_solution', (solution, length))
     
 @socketio.on('2opt')
 def two_opt():
