@@ -52,7 +52,7 @@ class TourConstruction(BaseAlgorithm):
         best_tours = []
         for city in cities:
             # we start the tour with one node I
-            tour, tour_length, tours = [city], 0, []
+            tour, tours = [city], []
             # we find the closest node R to the first node
             neighbor, _ = self.closest_neighbor(tour, city)
             tour.append(neighbor)
@@ -76,11 +76,10 @@ class TourConstruction(BaseAlgorithm):
                     added_distance = self.add(tour[i], tour[i+1], best)
                     if added_distance < min_distance:
                         min_index, min_distance = i, added_distance
-                tour_length += self.add(tour[min_index], tour[min_index + 1], best)
                 tours.append(tour)
                 tour.insert(min_index + 1, best)
                 tour = tour[:-1]
-            tour_length += distances[tour[0]][tour[-1]]
+            tour_length = self.compute_length(tour)
             if tour_length < best_length:
                 best_length, best_tour, best_tours = tour_length, tour, tours
         return [self.format_solution(step) for step in best_tours], best_length       
@@ -91,14 +90,14 @@ class TourConstruction(BaseAlgorithm):
         best_tours = []
         for city in cities:
             # we start the tour with one node I
-            tour, tour_length, tours = [city], 0, []
+            tour, tours = [city], []
             # we find the closest node R to the first node
             neighbor, _ = self.closest_neighbor(tour, city)
             tour.append(neighbor)
             while len(tour) != len(cities):
                 length, tour = self.add_closest_to_tour(tour)
-                tour_length += length
                 tours.append(tour)
+            tour_length = self.compute_length(tour)
             if tour_length < best_length:
                 best_length, best_tour, best_tours = tour_length, tour, tours
         return [self.format_solution(step) for step in best_tours], best_length        
