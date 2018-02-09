@@ -34,13 +34,17 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:    
         for city_dict in load(data):
-            if int(city_dict['population']) < 500000:
+            if int(city_dict['population']) < 800000:
                 continue
+            
             city = City(**city_dict)
+            print(city)
             db.session.add(city)
         try:
             db.session.commit()
+            
         except sql_exception.IntegrityError:
+            print('commit ok'*10)
             db.session.rollback()
 
 def create_app(config='config'):
@@ -53,13 +57,13 @@ def create_app(config='config'):
 
 app, socketio = create_app()
 
-from genetic_algorithm import GeneticAlgorithm
 from tour_construction import TourConstruction
-from optimization_algorithm import OptimizationAlgorithm
+from linear_programming import LinearProgramming
+from genetic_algorithm import GeneticAlgorithm
 
-ga = GeneticAlgorithm()
 tc = TourConstruction()
-oa = OptimizationAlgorithm()
+lp = LinearProgramming()
+ga = GeneticAlgorithm()
 
 ## Views
 
@@ -67,10 +71,9 @@ oa = OptimizationAlgorithm()
 def algorithm():
     session['best'] = float('inf')
     view = request.form['view'] if 'view' in request.form else '2D'
-    print(request.form)
+    print(City.query.all())
     return render_template(
         'index.html',
-        minimum_population = 500000,
         view = view,
         cities = {
             city.id: {
@@ -90,21 +93,17 @@ def nearest_neighbor():
 def nearest_insertion():
     emit('build_tours', tc.nearest_insertion())
 
-def optimization(function):
-    length, solution = getattr(oa, function)()
-    if length < session['best']:
-        session['best'] = length
-        emit('best_solution', (solution, length))
-    else:
-        emit('current_solution', (solution, length))
-    
+@socketio.on('cheapest_insertion')
+def cheapest_insertion():
+    emit('build_tours', tc.cheapest_insertion())
+
 @socketio.on('2opt')
 def two_opt():
-    optimization('two_opt')
-
-@socketio.on('3opt')
-def three_opt():
-    optimization('three_opt')
+    emit('build_tours', tc.two_opt())
+    
+@socketio.on('lp')
+def ilp_solver():
+    emit('build_tour', lp.ILP_solver())
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():
