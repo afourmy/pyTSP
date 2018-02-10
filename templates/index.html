@@ -88,6 +88,7 @@
           <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
           <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
           <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
+          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('2opt')">2opt</button>
           <button type="button" class="btn btn-primary" onclick="tourConstruction('lp')">LP</button>
           <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="1000"/>
         </div>
@@ -95,22 +96,11 @@
     </div>
 
     <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading">Optimization heuristics</div>
-      <div class="panel-body">
-        <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('2opt')">2opt</button>
-          <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('3opt')">3opt</button>
-          <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="100"/>
-        </div>
-      </div>
-    </div>
-    
-    <div class="panel panel-primary panel-transparent">
       <div class="panel-heading">Genetic algorithm</div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
           <button type="button" class="btn btn-primary" onclick="optimizationAlgorithm('genetic_algorithm')">Start</button>
-
+          <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="100"/>
         </div>
       </div>
     </div>
@@ -181,9 +171,7 @@
       createIntermediatePaths(paths, false, false);
       $("#score").text(Math.round(Number(length)));
       });
-
-
-      
+ 
     $('#slider1').slider({
       tooltip_position: 'bottom',
       formatter: function(value) {
