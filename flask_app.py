@@ -1,7 +1,7 @@
 from threading import Lock
 from flask import Flask, render_template, request, session
 from flask_socketio import emit, SocketIO
-from json import load
+from json import dumps, load
 from os import environ
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
@@ -66,6 +66,7 @@ ga = GeneticAlgorithm()
 
 @app.route('/', methods = ['GET', 'POST'])
 def algorithm():
+    print(session)
     session['best'] = float('inf')
     view = request.form['view'] if 'view' in request.form else '2D'
     print(City.query.all())
@@ -116,11 +117,9 @@ def genetic_algorithm():
     else:
         emit('current_solution', (best_individual, length))
 
-@app.route('/crossover', methods = ['POST'])
-def selection():
-    print(request.form)
-    session['crossover'] = request.form.getlist('value[]')
-    print(str(session['crossover'])*10)
+@app.route('/<method>', methods = ['POST'])
+def selection(method):
+    session[method] = request.form['value']
     return dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 if __name__ == '__main__':

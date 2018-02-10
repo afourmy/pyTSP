@@ -100,6 +100,7 @@
         <div class="dropdown" id="crossover">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;">Crossover method
           <span class="caret"></span></button>
+          <input type='hidden' id="type" value='crossover'>
           <ul class="dropdown-menu">
             <li><a href="#">HTML</a></li>
             <li><a href="#">CSS</a></li>
@@ -109,6 +110,7 @@
         <div class="dropdown" id="mutation">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;">Mutation method
           <span class="caret"></span></button>
+          <input type='hidden' id="type" value='mutation'>
           <ul class="dropdown-menu dd-mutation">
             <li><a href="#">HTML</a></li>
             <li><a href="#">CSS</a></li>
@@ -207,21 +209,24 @@
     socket.on('build_tours', function(paths, lengths) {
       createIntermediatePaths(paths, lengths, false, false);
       });
-    
+      
+    function send_value(url, value){
+      $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {value: value},
+        success: function(msg){
+          $('.answer').html(msg);
+          }
+        });
+      }
+
     // change drop-down value for crossover / mutation methods upon selection
     $(".dropdown-menu li a").click(function(){
       $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
       $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-      $.ajax({
-        type: "POST",
-        url: "/crossover",
-        dataType: "json",
-        data: {value: $(this).text()},
-        success: function(msg){
-            $('.answer').html(msg);
-        }
-      });
-      console.log('ok');
+      send_value($(this).parents(".dropdown").find('#type').val(), $(this).text());
     });
  
     $('#slider1').slider({
