@@ -88,7 +88,7 @@
           <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
           <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
           <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
-          <button type="button" class="btn btn-primary" onclick="tourConstruction('2opt')">Pairwise exchange</button>
+          <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
           <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="1000"/>
         </div>
       </div>
@@ -170,14 +170,12 @@
       createPath(path, false, true);
       });
   
-    socket.on('build_tour', function(path, length) {
-      createPath(path, true, false);
-      $("#score").text(Math.round(Number(length)));
+    socket.on('build_tour', function(path, lengths) {
+      createPath(path, lengths, true, false);
       });
       
-    socket.on('build_tours', function(paths, length) {
-      createIntermediatePaths(paths, false, false);
-      $("#score").text(Math.round(Number(length)));
+    socket.on('build_tours', function(paths, lengths) {
+      createIntermediatePaths(paths, lengths, false, false);
       });
  
     $('#slider1').slider({
@@ -244,11 +242,13 @@
           }
         }
       
-      /* Function to create a path, with an optinal argument: waiting time
-      between the creation of two edges for better visualization of tour 
-      construction heuristics */
+      /* Function to create a path, with optional arguments: 
+      - waiting time between the creation of two edges for better visualization 
+      of tour construction heuristics 
+      - lengths for updating the length in real-time, if createPath is not
+      called from another function like createIntermediatePath */
       
-      async function createPath(path, waitingTime, best){
+      async function createPath(path, lengths, waitingTime, best){
       
         var color = best ? '#d4222a' : '#0000ff';
         var lines = best ? bestPolylines : polylines;
@@ -257,6 +257,12 @@
           }
 
         for (i = 0; i < path.length - 1; i++) { 
+          console.log(lengths[i]);
+          
+          // update the score
+          if (lengths) {
+            $("#score").text(Math.round(Number(lengths[i])));
+            }
     
           var source_lat = path[i][0];
               source_lon = path[i][1];
@@ -285,9 +291,12 @@
           }
         }
         
-      async function createIntermediatePaths(paths, best){
+      async function createIntermediatePaths(paths, lengths, best){
         for (j = 0; j < paths.length; j++) {
-          createPath(paths[j], false, best);
+          console.log(Math.round(Number(lengths[j])));
+          // update the score
+          $("#score").text(Math.round(Number(lengths[j])));
+          createPath(paths[j], false, false, best);
           var speed = $('#slider1').val();
           await sleep(50000/speed);
           }

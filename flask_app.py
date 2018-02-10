@@ -94,10 +94,9 @@ def nearest_insertion():
 def cheapest_insertion():
     emit('build_tours', tc.cheapest_insertion())
 
-@socketio.on('2opt')
-def two_opt():
-    print('test')
-    emit('build_tours', tc.two_opt())
+@socketio.on('pairwise_exchange')
+def pairwise_exchange():
+    emit('build_tours', tc.pairwise_exchange())
 
 @socketio.on('lp')
 def ilp_solver():
