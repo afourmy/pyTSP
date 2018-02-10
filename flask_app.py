@@ -96,8 +96,9 @@ def cheapest_insertion():
 
 @socketio.on('2opt')
 def two_opt():
+    print('test')
     emit('build_tours', tc.two_opt())
-    
+
 @socketio.on('lp')
 def ilp_solver():
     emit('build_tour', lp.ILP_solver())

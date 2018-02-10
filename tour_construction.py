@@ -101,7 +101,7 @@ class TourConstruction(BaseAlgorithm):
                 tours.append(tour)
             if tour_length < best_length:
                 best_length, best_tour, best_tours = tour_length, tour, tours
-        return [self.format_solution(step) for step in best_tours], best_length        
+        return [self.format_solution(step) for step in best_tours], best_length  
     
     ## Local search: pairwise exchange (2-opt)
     
@@ -111,7 +111,7 @@ class TourConstruction(BaseAlgorithm):
 
     # main 2-opt algorithm
     def two_opt(self):
-        solution = self.generate_solution()
+        solution, tours = self.generate_solution(), []
         stable, best = False, self.compute_length(solution)
         while not stable:
             stable = True
@@ -121,7 +121,8 @@ class TourConstruction(BaseAlgorithm):
                     length_candidate = self.compute_length(candidate)
                     if best > length_candidate:
                         solution, best = candidate, length_candidate
+                        tours.append(solution)
                         stable = False
-        return best, self.format_solution(solution)
+        return [self.format_solution(step) for step in tours], best 
 
                 
