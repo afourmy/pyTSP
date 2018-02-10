@@ -212,7 +212,16 @@
     $(".dropdown-menu li a").click(function(){
       $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
       $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-      console.log($(this).text());
+      $.ajax({
+        type: "POST",
+        url: "/crossover",
+        dataType: "json",
+        data: {value: $(this).text()},
+        success: function(msg){
+            $('.answer').html(msg);
+        }
+      });
+      console.log('ok');
     });
  
     $('#slider1').slider({

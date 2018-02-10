@@ -102,6 +102,8 @@ def pairwise_exchange():
 def ilp_solver():
     emit('build_tour', lp.ILP_solver())
 
+## Genetic algorithm
+
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():
     if 'generation' not in session:
@@ -113,6 +115,13 @@ def genetic_algorithm():
         emit('best_solution', (best_individual, length))
     else:
         emit('current_solution', (best_individual, length))
+
+@app.route('/crossover', methods = ['POST'])
+def selection():
+    print(request.form)
+    session['crossover'] = request.form.getlist('value[]')
+    print(str(session['crossover'])*10)
+    return dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 if __name__ == '__main__':
     socketio.run(
