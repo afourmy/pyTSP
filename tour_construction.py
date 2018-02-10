@@ -88,20 +88,24 @@ class TourConstruction(BaseAlgorithm):
     def cheapest_insertion(self):
         best_tour, best_length = None, float('inf')
         # store intermediate tours for visualization purposes
-        best_tours = []
+        best_tours, best_lengths = [], []
         for city in cities:
             # we start the tour with one node I
-            tour, tour_length, tours = [city], 0, []
+            tour, tours, lengths = [city], [], []
             # we find the closest node R to the first node
-            neighbor, _ = self.closest_neighbor(tour, city)
+            neighbor, length = self.closest_neighbor(tour, city)
+            tour_length = length
             tour.append(neighbor)
             while len(tour) != len(cities):
                 length, tour = self.add_closest_to_tour(tour)
                 tour_length += length
                 tours.append(tour)
+                lengths.append(tour_length)
+            tour_length += distances[tour[-1]][tour[0]]
+            lengths[-1] += distances[tour[-1]][tour[0]]
             if tour_length < best_length:
-                best_length, best_tour, best_tours = tour_length, tour, tours
-        return [self.format_solution(step) for step in best_tours], best_length  
+                best_lengths, best_tour, best_tours = lengths, tour, tours
+        return [self.format_solution(step) for step in best_tours], best_lengths
     
     ## Local search: pairwise exchange (2-opt)
     

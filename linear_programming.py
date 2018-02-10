@@ -33,4 +33,4 @@ class LinearProgramming(BaseAlgorithm):
         _, x = glpk.ilp(c, G.T, h, A.T, b, B=set(range(sx)))
         reverse_mapping = [(i+1, j+1) for i in range(n) for j in range(i + 1, n)]
         tour = self.edges_to_tour([reverse_mapping[k] for k in range(sx) if x[k]])
-        return self.format_solution(tour), self.compute_length(tour)
+        return self.format_solution(tour), [self.compute_length(tour)]*n
