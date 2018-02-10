@@ -162,12 +162,12 @@
     }
     
     socket.on('current_solution', function(path, score) {
-      createPath(path, false, false);
+      createPath(path, false, false, false);
       });
       
     socket.on('best_solution', function(path, score) {
       $("#score").text(Math.round(Number(score)));
-      createPath(path, false, true);
+      createPath(path, false, false, true);
       });
   
     socket.on('build_tour', function(path, lengths) {
