@@ -107,9 +107,9 @@ def genetic_algorithm():
     fitness_value, solution = ga.cycle()
     if fitness_value < session['best']:
         session['best'] = fitness_value
-        emit('best_solution', solution)
+        emit('best_solution', (solution, fitness_value))
     else:
-        emit('current_solution', solution)
+        emit('current_solution', (solution, fitness_value))
 
 if __name__ == '__main__':
     socketio.run(

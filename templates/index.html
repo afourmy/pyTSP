@@ -163,8 +163,13 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-    socket.on('current_solution', function(path) {
+    socket.on('current_solution', function(path, score) {
       createPath(path, false, false);
+      });
+      
+    socket.on('best_solution', function(path, score) {
+      $("#score").text(Math.round(Number(score)));
+      createPath(path, false, true);
       });
   
     socket.on('build_tour', function(path, length) {
@@ -177,10 +182,7 @@
       $("#score").text(Math.round(Number(length)));
       });
 
-    socket.on('best_solution', function(path, best_length) {
-      $("#score").text(Math.round(Number(best_length)));
-      createPath(path, false, true);
-      });
+
       
     $('#slider1').slider({
       tooltip_position: 'bottom',
