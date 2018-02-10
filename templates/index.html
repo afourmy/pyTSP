@@ -99,9 +99,15 @@
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
           <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
-          <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/>
+          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Stop</button>
         </div>
-      </div>
+        <ul class="list-group">
+          <li class="list-group-item"><input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
+          <li class="list-group-item"><input id="mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/>
+      </div></li> 
+
+        </ul>
+
     </div>
   
     <div class="panel panel-danger panel-transparent">
@@ -125,8 +131,8 @@
     var currentAlgorithm = undefined;
 
     function tourConstruction(algorithm){
+        clearAll();
         if (window.optimizationTimer) {
-          clearAll();
           clearTimeout(window.optimizationTimer);
           window.optimizationTimer = 0;
           }
@@ -189,6 +195,13 @@
       tooltip_position: 'bottom',
       formatter: function(value) {
         return 'Speed';
+      }
+    });
+    
+    $('#mutation_rate').slider({
+      tooltip_position: 'bottom',
+      formatter: function(value) {
+        return 'Mutation rate';
       }
     });
 

@@ -104,12 +104,15 @@ def ilp_solver():
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():
-    fitness_value, solution = ga.cycle()
-    if fitness_value < session['best']:
-        session['best'] = fitness_value
-        emit('best_solution', (solution, fitness_value))
+    if 'generation' not in session:
+        session['generation'] = ga.create_first_generation()
+    new_generation, best_individual, length = ga.cycle(session['generation'])
+    session['generation'] = new_generation
+    if length < session['best']:
+        session['best'] = length
+        emit('best_solution', (best_individual, length))
     else:
-        emit('current_solution', (solution, fitness_value))
+        emit('current_solution', (best_individual, length))
 
 if __name__ == '__main__':
     socketio.run(
