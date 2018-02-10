@@ -11,12 +11,13 @@ class GeneticAlgorithm(BaseAlgorithm):
     def random_swap(self, solution):
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
+        return solution
 
     ## Crossover methods
 
     def cycle(self):
         candidate = self.generate_solution()
-        mutant = self.two_opt(candidate)
+        mutant = self.random_swap(candidate)
         fitness_value = self.compute_length(mutant)
         solution = [coordinates[city] for city in mutant]
         full_solution = solution + [solution[0]] 

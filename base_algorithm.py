@@ -32,6 +32,9 @@ distances = compute_distances(cities)
 
 class BaseAlgorithm():
     
+    def __init__(self):
+        self.size = len(cities)
+    
     def generate_solution(self):
         return sample(cities, len(cities))
     

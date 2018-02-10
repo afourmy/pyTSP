@@ -36,13 +36,10 @@ def import_cities():
         for city_dict in load(data):
             if int(city_dict['population']) < 800000:
                 continue
-            
             city = City(**city_dict)
-            print(city)
             db.session.add(city)
         try:
             db.session.commit()
-            
         except sql_exception.IntegrityError:
             print('commit ok'*10)
             db.session.rollback()
@@ -107,7 +104,7 @@ def ilp_solver():
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm():
-    fitness_value, solution = genetic_algorithm.cycle()
+    fitness_value, solution = ga.cycle()
     if fitness_value < session['best']:
         session['best'] = fitness_value
         emit('best_solution', solution)
