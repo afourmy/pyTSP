@@ -22,6 +22,11 @@
           min-height: 100%; 
       }
       
+      .list-group-item {
+      background-color: transparent;
+      padding: 15px 15px;
+      }
+
       #slider-css .slider-selection {
         background: #BABABA;
       }
@@ -79,6 +84,23 @@
     <strong><font color="red"><p id="score">Length</p></font></strong>
   </div>
   
+  <div class="panel-group" style="z-index:500; position: absolute; top: 100px; left:20px;">
+    <div class="panel panel-success panel-transparent">
+      <div class="panel-heading">Genetic algorithm</div>
+      <div class="panel-body">
+        <div class="btn-group-vertical btn-block" >
+          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
+          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Stop</button>
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item"><input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
+          <li class="list-group-item"><input id="mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/>
+          <li class="list-group-item"><input id="crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/>
+      </div></li> 
+        </ul>
+    </div>
+  </div>
+  
   <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
   
     <div class="panel panel-primary panel-transparent">
@@ -92,22 +114,6 @@
           <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
         </div>
       </div>
-    </div>
-
-    <div class="panel panel-success panel-transparent">
-      <div class="panel-heading">Genetic algorithm</div>
-      <div class="panel-body">
-        <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
-          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Stop</button>
-        </div>
-        <ul class="list-group">
-          <li class="list-group-item"><input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
-          <li class="list-group-item"><input id="mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/>
-      </div></li> 
-
-        </ul>
-
     </div>
   
     <div class="panel panel-danger panel-transparent">
@@ -185,25 +191,42 @@
       });
  
     $('#slider1').slider({
-      tooltip_position: 'bottom',
       formatter: function(value) {
         return 'Speed';
       }
     });
     
     $('#slider2').slider({
-      tooltip_position: 'bottom',
       formatter: function(value) {
         return 'Speed';
       }
     });
     
-    $('#mutation_rate').slider({
-      tooltip_position: 'bottom',
+    $('#crossover_rate').slider({
+      tooltip_position:'left',
       formatter: function(value) {
-        return 'Mutation rate';
+        return 'Mutation rate: ' + value;
       }
     });
+    
+    $('#mutation_rate').slider({
+      tooltip_position:'left',
+      formatter: function(value) {
+        return 'Mutation rate: ' + value;
+      }
+    });
+    
+    $('#crossover_rate').on('change', function() {
+      var value = $('#crossover_rate').slider('getValue');
+      console.log(value);
+      });
+    
+    $('#mutation_rate').on('change', function() {
+      var value = $('#mutation_rate').slider('getValue');
+      console.log(value);
+      });
+      
+
 
     {% if view == '2D' %}
     
