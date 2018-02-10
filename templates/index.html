@@ -98,7 +98,7 @@
       <div class="panel-heading">Genetic algorithm</div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-success" onclick="optimizationAlgorithm('genetic_algorithm')">Start</button>
+          <button type="button" class="btn btn-success" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
           <input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/>
         </div>
       </div>
@@ -133,7 +133,7 @@
         socket.emit(algorithm);
       }
 
-    function optimizationAlgorithm(algorithm) {
+    function geneticAlgorithm(algorithm) {
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {

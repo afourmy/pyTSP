@@ -32,30 +32,32 @@ class TourConstruction(BaseAlgorithm):
         return best_dist, new_tour
     
     def nearest_neighbor(self):
-        best_tour, best_length = None, float('inf')
+        best_tour, best_length, best_lengths = None, float('inf'), []
         for city in cities:
-            current, tour, length = city, [city], 0
+            current, tour, tour_length, tour_lengths = city, [city], 0, []
             while len(tour) != len(cities):
                 arg_min, edge_length = self.closest_neighbor(tour, current)
-                length += edge_length
+                tour_length += edge_length
+                tour_lengths.append(tour_length)
                 tour.append(arg_min)
                 current = arg_min
             # we close the tour by adding the last edge length
-            length += distances[current][city]
-            if length < best_length:
-                best_length, best_tour = length, tour
-        return self.format_solution(best_tour), best_length
+            tour_length += distances[current][city]
+            tour_lengths.append(tour_length)
+            if tour_length < best_length:
+                best_length, best_lengths, best_tour = tour_length,tour_lengths, tour
+        return self.format_solution(best_tour), best_lengths
 
     def nearest_insertion(self):
-        best_tour, best_length = None, float('inf')
-        # store intermediate tours for visualization purposes
-        best_tours = []
+        best_length, best_tours = float('inf'), []
         for city in cities:
             # we start the tour with one node I
-            tour, tour_length, tours = [city], 0, []
+            tour, tours, tour_lengths = [city], [], []
             # we find the closest node R to the first node
-            neighbor, _ = self.closest_neighbor(tour, city)
+            neighbor, length = self.closest_neighbor(tour, city)
             tour.append(neighbor)
+            tour_length = length
+            tour_lengths.append(tour_length)
             while len(tour) != len(cities):
                 best, min_distance = None, float('inf')
                 # (selection step) given a sub-tour,we find node r not in the 
@@ -77,13 +79,17 @@ class TourConstruction(BaseAlgorithm):
                     if added_distance < min_distance:
                         min_index, min_distance = i, added_distance
                 tour_length += self.add(tour[min_index], tour[min_index + 1], best)
+                tour_lengths.append(tour_length)
                 tours.append(tour)
                 tour.insert(min_index + 1, best)
                 tour = tour[:-1]
             tour_length += distances[tour[0]][tour[-1]]
+            tour_lengths.append(tour_length)
             if tour_length < best_length:
-                best_length, best_tour, best_tours = tour_length, tour, tours
-        return [self.format_solution(step) for step in best_tours], best_length       
+                best_length, best_tours = tour_length, tours
+                best_lengths = tour_lengths
+        best_lengths = [sum(best_lengths[:3])] + best_lengths[3:]
+        return [self.format_solution(step) for step in best_tours], best_lengths       
             
     def cheapest_insertion(self):
         best_tour, best_length = None, float('inf')
@@ -91,20 +97,22 @@ class TourConstruction(BaseAlgorithm):
         best_tours, best_lengths = [], []
         for city in cities:
             # we start the tour with one node I
-            tour, tours, lengths = [city], [], []
+            tour, tours, tour_lengths = [city], [], []
             # we find the closest node R to the first node
             neighbor, length = self.closest_neighbor(tour, city)
             tour_length = length
+            tour_lengths.append(length)
             tour.append(neighbor)
             while len(tour) != len(cities):
                 length, tour = self.add_closest_to_tour(tour)
                 tour_length += length
                 tours.append(tour)
-                lengths.append(tour_length)
+                tour_lengths.append(tour_length)
             tour_length += distances[tour[-1]][tour[0]]
-            lengths[-1] += distances[tour[-1]][tour[0]]
+            tour_lengths.append(tour_length)
             if tour_length < best_length:
-                best_lengths, best_tour, best_tours = lengths, tour, tours
+                best_lengths, best_tour, best_tours = tour_lengths, tour, tours
+        best_lengths = [sum(best_lengths[:3])] + best_lengths[3:]
         return [self.format_solution(step) for step in best_tours], best_lengths
     
     ## Local search: pairwise exchange (2-opt)
