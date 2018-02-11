@@ -90,7 +90,6 @@
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
           <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
-          <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Stop</button>
         </div><br><br>
         <ul class="list-group">
           <li class="list-group-item"><input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
@@ -102,9 +101,9 @@
           <span class="caret"></span></button>
           <input type='hidden' id="type" value='crossover'>
           <ul class="dropdown-menu">
-            <li><a href="#">HTML</a></li>
-            <li><a href="#">CSS</a></li>
-            <li><a href="#">JavaScript</a></li>
+            <li><a href="#">OC</a></li>
+            <li><a href="#">MPC</a></li>
+            <li><a href="#">PMC</a></li>
           </ul>
         </div>
         <div class="dropdown" id="mutation">
@@ -112,9 +111,9 @@
           <span class="caret"></span></button>
           <input type='hidden' id="type" value='mutation'>
           <ul class="dropdown-menu dd-mutation">
-            <li><a href="#">HTML</a></li>
-            <li><a href="#">CSS</a></li>
-            <li><a href="#">JavaScript</a></li>
+            <li><a href="#">Swap</a></li>
+            <li><a href="#">Insertion</a></li>
+            <li><a href="#">Displacement</a></li>
           </ul>
         </div>
       </div>
@@ -181,13 +180,15 @@
         socket.emit(algorithm);
       }
 
-    function geneticAlgorithm(algorithm) {
+    function geneticAlgorithm() {
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {
         var speed = $('#slider2').val();
         window.optimizationTimer = setTimeout(function () {
-          socket.emit(algorithm);
+          var mrate = $('#mutation_rate').slider('getValue');
+          var cr = $('#crossover_rate').slider('getValue');
+          socket.emit('genetic_algorithm', {mr: mrate});
           timeout();
           }, 50000/speed);
         };
@@ -253,16 +254,6 @@
         return 'Mutation rate: ' + value;
       }
     });
-    
-    $('#crossover_rate').on('change', function() {
-      var value = $('#crossover_rate').slider('getValue')
-      send_value('crossover', value);
-      });
-    
-    $('#mutation_rate').on('change', function() {
-      var value = $('#mutation_rate').slider('getValue');
-      send_value('mutation', value);
-      });
 
     {% if view == '2D' %}
 

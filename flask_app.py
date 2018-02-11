@@ -68,10 +68,9 @@ tch = TourConstructionHeuristics()
 
 @app.route('/', methods = ['GET', 'POST'])
 def algorithm():
-    print(session)
     session['best'] = float('inf')
+    session['crossover'], session['mutation'] = 'OC', 'Swap'
     view = request.form['view'] if 'view' in request.form else '2D'
-    print(City.query.all())
     return render_template(
         'index.html',
         view = view,
@@ -116,10 +115,11 @@ def ilp_solver():
 ## Genetic algorithm
 
 @socketio.on('genetic_algorithm')
-def genetic_algorithm():
+def genetic_algorithm(data):
+    print(data)
     if 'generation' not in session:
         session['generation'] = ga.create_first_generation()
-    new_generation, best_individual, length = ga.cycle(session['generation'])
+    new_generation, best_individual, length = ga.cycle(**session)
     session['generation'] = new_generation
     if length < session['best']:
         session['best'] = length
@@ -127,10 +127,11 @@ def genetic_algorithm():
     else:
         emit('current_solution', (best_individual, length))
 
-@app.route('/<method>', methods = ['POST'])
-def selection(method):
-    session[method] = request.form['value']
-    return dumps({'success': True}), 200, {'ContentType': 'application/json'}
+# @app.route('/<method>', methods = ['POST'])
+# def selection(method):
+#     print(method, request.form['value'])
+#     session[method] = request.form['value']
+#     return dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 if __name__ == '__main__':
     socketio.run(

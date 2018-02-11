@@ -4,13 +4,13 @@ from random import randint, randrange, shuffle
 class GeneticAlgorithm(BaseAlgorithm):
     
     crossovers = {
-        'OC': 'order_crossver',
+        'OC': 'order_crossover',
         'MPC': 'maximal_preservative_crossover',
         'PMC': 'partially_mapped_crossover'
         }
     
     mutations = {
-        'Random': 'random_mutation',
+        'Swap': 'swap_mutation',
         'Insertion': 'insertion_mutation',
         'Displacement': 'displacement_mutation'
         }
@@ -26,7 +26,7 @@ class GeneticAlgorithm(BaseAlgorithm):
     
     ## Mutation methods
 
-    def random_mutation(self, solution):
+    def swap_mutation(self, solution):
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
         return solution
@@ -96,14 +96,17 @@ class GeneticAlgorithm(BaseAlgorithm):
     def create_first_generation(self):
         return [self.generate_solution() for _ in range(10)]
 
-    def cycle(self, generation):
+    def cycle(self, **session):
+        generation = session['generation']
+        crossover = self.crossovers[session['crossover']]
+        mutation = self.mutations[session['mutation']]
         shuffle(generation)
         ng = []
         # first step: crossover with a Pc probability
         for i1, i2 in zip(generation[::2], generation[1::2]):
-            ng.extend(getattr(self, self.crossover)(i1, i2) if 1 else (i1, i2))
+            ng.extend(getattr(self, crossover)(i1, i2) if 1 else (i1, i2))
         # second step: mutation with a Pm probability
-        ng = [getattr(self, self.mutation)(i) if True else i for i in ng]
+        ng = [getattr(self, mutation)(i) if True else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
