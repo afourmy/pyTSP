@@ -139,7 +139,7 @@
           <div class="btn-group-vertical btn-block" >
             <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
             <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('link_insertion')">Edge insertion</button>
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
           </div>
         </div>
       </div>
@@ -256,12 +256,10 @@
     
     $('#crossover_rate').on('change', function() {
       var value = $('#crossover_rate').slider('getValue');
-      console.log(value);
       });
     
     $('#mutation_rate').on('change', function() {
       var value = $('#mutation_rate').slider('getValue');
-      console.log(value);
       });
 
     {% if view == '2D' %}
@@ -329,8 +327,6 @@
           }
 
         for (i = 0; i < path.length - 1; i++) { 
-          console.log(lengths[i]);
-          
           // update the score
           if (lengths) {
             $("#score").text(Math.round(Number(lengths[i])));
@@ -365,7 +361,6 @@
         
       async function createIntermediatePaths(paths, lengths, best){
         for (j = 0; j < paths.length; j++) {
-          console.log(Math.round(Number(lengths[j])));
           // update the score
           $("#score").text(Math.round(Number(lengths[j])));
           createPath(paths[j], false, false, best);

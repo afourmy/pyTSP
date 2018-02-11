@@ -1,4 +1,5 @@
 from .base_algorithm import *
+from functools import partialmethod
 
 class LocalOptmizationHeuristics(BaseAlgorithm):
     
@@ -25,24 +26,25 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
                         stable = False
         return [self.format_solution(step) for step in tours], lengths
 
-    ## Node insertion
+    ## Node and edge insertion
 
-    def node_insertion(self):
+    def substring_insertion(self, k):
         solution = self.generate_solution()
         stable, best = False, self.compute_length(solution)
         lengths, tours = [best], [solution]
         while not stable:
             stable = True
-            for i in range(1, self.size - 1):
-                for j in range(1, self.size - 1):
-                    substring = solution[i:i+1]
-                    candidate = solution[:i] + solution[i+1:]
+            for i in range(self.size - k):
+                for j in range(self.size):
+                    substring = solution[i:(i + k)]
+                    candidate = solution[:i] + solution[(i + k):]
                     candidate = candidate[:j] + substring + candidate[j:]
-                    print(len(solution), len(candidate))
                     tour_length = self.compute_length(candidate)
                     if best > tour_length:
                         stable, solution, best = False, candidate, tour_length
                         tours.append(solution)
                         lengths.append(best)
-        print(tours, lengths)
         return [self.format_solution(step) for step in tours], lengths
+    
+    node_insertion = partialmethod(substring_insertion, 1)
+    edge_insertion = partialmethod(substring_insertion, 2)

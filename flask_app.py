@@ -105,6 +105,10 @@ def pairwise_exchange():
 def node_insertion():
     emit('build_tours', loh.node_insertion())
 
+@socketio.on('edge_insertion')
+def edge_insertion():
+    emit('build_tours', loh.edge_insertion())
+
 @socketio.on('lp')
 def ilp_solver():
     emit('build_tour', lp.ILP_solver())
