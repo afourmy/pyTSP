@@ -99,7 +99,7 @@ def cheapest_insertion():
 
 @socketio.on('pairwise_exchange')
 def pairwise_exchange():
-    emit('build_tours', tc.pairwise_exchange())
+    emit('build_tours', loh.pairwise_exchange())
 
 @socketio.on('lp')
 def ilp_solver():

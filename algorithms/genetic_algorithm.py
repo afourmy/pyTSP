@@ -3,8 +3,22 @@ from random import randint, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):
     
+    crossovers = {
+        'OC': 'order_crossver',
+        'MPC': 'maximal_preservative_crossover',
+        'PMC': 'partially_mapped_crossover'
+        }
+    
+    mutations = {
+        'Random': 'random_mutation',
+        'Insertion': 'insertion_mutation',
+        'Displacement': 'displacement_mutation'
+        }
+    
     def __init__(self):
         super().__init__()
+        self.crossover = 'order_crossover'
+        self.mutation = 'random_mutation'
 
     def crossover_cut(self):
         first_cut = randint(1, self.size - 2)
@@ -12,7 +26,7 @@ class GeneticAlgorithm(BaseAlgorithm):
     
     ## Mutation methods
 
-    def random_swap(self, solution):
+    def random_mutation(self, solution):
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
         return solution
@@ -89,7 +103,7 @@ class GeneticAlgorithm(BaseAlgorithm):
         for i1, i2 in zip(generation[::2], generation[1::2]):
             ng.extend(self.crossover(i1, i2) if 1 else (i1, i2))
         # second step: mutation with a Pm probability
-        ng = [self.random_swap(i) if True else i for i in ng]
+        ng = [self.mutation(i) if True else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])

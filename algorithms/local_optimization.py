@@ -2,7 +2,7 @@ from .base_algorithm import *
 
 class LocalOptmizationHeuristics(BaseAlgorithm):
     
-    ## Local search: pairwise exchange (2-opt)
+    ## Pairwise exchange (2-opt)
     
     # swap two edges
     def swap(self, solution, x, y):
@@ -25,5 +25,7 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
                         lengths.append(best)
                         stable = False
         return [self.format_solution(step) for step in tours], lengths
+
+    ## Node insertion
 
                 
