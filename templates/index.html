@@ -186,8 +186,6 @@
       function timeout() {
         var speed = $('#slider2').val();
         window.optimizationTimer = setTimeout(function () {
-
-
           socket.emit('genetic_algorithm', {
             mr: $('#mutation_rate').slider('getValue'),
             cr: $('#crossover_rate').slider('getValue'),
@@ -246,7 +244,31 @@
         return 'Mutation rate: ' + value;
       }
     });
+    
+    // creation of the socket listeners for all algorithms
 
+    socket.on('current_solution', function(path, score) {
+      createPath(path, false, false, false);
+      });
+      
+    socket.on('best_solution', function(path, score) {
+      $("#score").text(Math.round(Number(score)));
+      createPath(path, false, false, true);
+      });
+  
+    socket.on('build_tour', function(path, lengths) {
+      createPath(path, lengths, true, false);
+      });
+      
+    socket.on('build_tours', function(paths, lengths) {
+      createIntermediatePaths(paths, lengths, false, false);
+      });
+
+    /* The following part is made of the code that depends on the dimension
+    - Initialization of the map (resp. globe) and drawing of the icons
+    - Initialiation of the tile layer */
+    
+    // 2D code
     {% if view == '2D' %}
 
       var map = L.map('map').setView([39, -98], 5);
@@ -415,23 +437,7 @@
         }
 
     {% endif %}
-    
-    socket.on('current_solution', function(path, score) {
-      createPath(path, false, false, false);
-      });
-      
-    socket.on('best_solution', function(path, score) {
-      $("#score").text(Math.round(Number(score)));
-      createPath(path, false, false, true);
-      });
-  
-    socket.on('build_tour', function(path, lengths) {
-      createPath(path, lengths, true, false);
-      });
-      
-    socket.on('build_tours', function(paths, lengths) {
-      createIntermediatePaths(paths, lengths, false, false);
-      });
+
   </script>
 </body>
 </html>
