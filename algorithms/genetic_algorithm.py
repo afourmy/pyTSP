@@ -1,4 +1,4 @@
-from base_algorithm import *
+from .base_algorithm import *
 from random import randint, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):

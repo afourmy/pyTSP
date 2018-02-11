@@ -54,9 +54,9 @@ def create_app(config='config'):
 
 app, socketio = create_app()
 
-from tour_construction import TourConstruction
-from linear_programming import LinearProgramming
-from genetic_algorithm import GeneticAlgorithm
+from algorithms.tour_construction import TourConstruction
+from algorithms.linear_programming import LinearProgramming
+from algorithms.genetic_algorithm import GeneticAlgorithm
 
 tc = TourConstruction()
 lp = LinearProgramming()

@@ -1,4 +1,4 @@
-from base_algorithm import *
+from .base_algorithm import *
 from operator import itemgetter
 
 class TourConstruction(BaseAlgorithm):

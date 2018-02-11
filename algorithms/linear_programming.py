@@ -1,4 +1,4 @@
-from base_algorithm import *
+from .base_algorithm import *
 from cvxopt import matrix, glpk, solvers
 from itertools import chain, combinations
 from numpy import concatenate, eye, float, full, ones, vstack, zeros
