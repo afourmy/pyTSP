@@ -54,13 +54,15 @@ def create_app(config='config'):
 
 app, socketio = create_app()
 
-from algorithms.tour_construction import TourConstructionHeuristics
-from algorithms.linear_programming import LinearProgramming
 from algorithms.genetic_algorithm import GeneticAlgorithm
+from algorithms.linear_programming import LinearProgramming
+from algorithms.local_optimization import LocalOptmizationHeuristics
+from algorithms.tour_construction import TourConstructionHeuristics
 
-tch = TourConstructionHeuristics()
-lp = LinearProgramming()
 ga = GeneticAlgorithm()
+lp = LinearProgramming()
+loh = LocalOptmizationHeuristics()
+tch = TourConstructionHeuristics()
 
 ## Views
 
@@ -85,15 +87,15 @@ def algorithm():
 
 @socketio.on('nearest_neighbor')
 def nearest_neighbor():
-    emit('build_tour', tc.nearest_neighbor())
+    emit('build_tour', tch.nearest_neighbor())
 
 @socketio.on('nearest_insertion')
 def nearest_insertion():
-    emit('build_tours', tc.nearest_insertion())
+    emit('build_tours', tch.nearest_insertion())
 
 @socketio.on('cheapest_insertion')
 def cheapest_insertion():
-    emit('build_tours', tc.cheapest_insertion())
+    emit('build_tours', tch.cheapest_insertion())
 
 @socketio.on('pairwise_exchange')
 def pairwise_exchange():
