@@ -255,11 +255,13 @@
     });
     
     $('#crossover_rate').on('change', function() {
-      var value = $('#crossover_rate').slider('getValue');
+      var value = $('#crossover_rate').slider('getValue')
+      send_value('crossover', value);
       });
     
     $('#mutation_rate').on('change', function() {
       var value = $('#mutation_rate').slider('getValue');
+      send_value('mutation', value);
       });
 
     {% if view == '2D' %}

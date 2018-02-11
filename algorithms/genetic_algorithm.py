@@ -101,9 +101,9 @@ class GeneticAlgorithm(BaseAlgorithm):
         ng = []
         # first step: crossover with a Pc probability
         for i1, i2 in zip(generation[::2], generation[1::2]):
-            ng.extend(self.crossover(i1, i2) if 1 else (i1, i2))
+            ng.extend(getattr(self, self.crossover)(i1, i2) if 1 else (i1, i2))
         # second step: mutation with a Pm probability
-        ng = [self.mutation(i) if True else i for i in ng]
+        ng = [getattr(self, self.mutation)(i) if True else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
