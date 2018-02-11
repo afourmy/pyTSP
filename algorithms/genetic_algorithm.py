@@ -97,7 +97,7 @@ class GeneticAlgorithm(BaseAlgorithm):
     ## Core algorithm
     
     def create_first_generation(self):
-        return [self.generate_solution() for _ in range(100)]
+        return [self.generate_solution() for _ in range(10)]
 
     def cycle(self, generation, **data):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]

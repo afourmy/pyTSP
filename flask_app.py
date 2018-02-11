@@ -27,8 +27,7 @@ def configure_socket(app):
     socketio = SocketIO(app, async_mode=async_mode)
     thread_lock = Lock()
     return socketio
-    
-# import data
+
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:    
         for city_dict in load(data):
@@ -79,15 +78,14 @@ def socket_emit(method):
         session['best'] = float('inf')
         emit(tour, getattr(tsp, method)())
     return function
-
 for algorithm in tsp.algorithms:
     socket_emit(algorithm)
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
     if 'generation' not in session:
-        session['generation'] = ga.create_first_generation()
-    session['generation'], best, length = ga.cycle(session['generation'], **data)
+        session['generation'] = tsp.create_first_generation()
+    session['generation'], best, length = tsp.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length
         emit('best_solution', (best, length))
