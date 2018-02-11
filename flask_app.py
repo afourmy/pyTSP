@@ -54,15 +54,8 @@ def create_app(config='config'):
 
 app, socketio = create_app()
 
-from algorithms.genetic_algorithm import GeneticAlgorithm
-from algorithms.linear_programming import LinearProgramming
-from algorithms.local_optimization import LocalOptmizationHeuristics
-from algorithms.tour_construction import TourConstructionHeuristics
-
-ga = GeneticAlgorithm()
-lp = LinearProgramming()
-loh = LocalOptmizationHeuristics()
-tch = TourConstructionHeuristics()
+from algorithms.pytsp import pyTSP
+tsp = pyTSP()
 
 ## Views
 
@@ -83,32 +76,17 @@ def algorithm():
             },
         async_mode = socketio.async_mode
         )
-# 
-# @socketio.on('nearest_neighbor')
-# def nearest_neighbor():
-#     session['best'] = float('inf')
-#     emit('build_tour', tch.nearest_neighbor())
 
 def socket_emit(method):
     @socketio.on(method)
     def function():
         tour = 'build_tour' + 's'*(method != 'nearest_neighbor')
         session['best'] = float('inf')
-        emit(tour, getattr(tch, method)())
+        emit(tour, getattr(tsp, method)())
     return function
 
 for method in ('nearest_neighbor', 'nearest_insertion', 'cheapest_insertion'):
     socket_emit(method)
-# 
-# @socketio.on('nearest_insertion')
-# def nearest_insertion():
-#     session['best'] = float('inf')
-#     emit('build_tours', tch.nearest_insertion())
-# 
-# @socketio.on('cheapest_insertion')
-# def cheapest_insertion():
-#     session['best'] = float('inf')
-#     emit('build_tours', tch.cheapest_insertion())
 
 @socketio.on('pairwise_exchange')
 def pairwise_exchange():
