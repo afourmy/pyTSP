@@ -2,18 +2,16 @@ from threading import Lock
 from flask import Flask, render_template, request, session
 from flask_socketio import emit, SocketIO
 from json import dumps, load
-from os import environ
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
 
-# prevent python from writing *.pyc files / __pycache__ folders
 dont_write_bytecode = True
-
 path_app = dirname(abspath(__file__))
 if path_app not in path:
     path.append(path_app)
 
+from algorithms.pytsp import pyTSP
 from database import db, create_database
 from models import City
 
@@ -41,7 +39,6 @@ def import_cities():
         try:
             db.session.commit()
         except sql_exception.IntegrityError:
-            print('commit ok'*10)
             db.session.rollback()
 
 def create_app(config='config'):
@@ -49,13 +46,11 @@ def create_app(config='config'):
     app.config.from_object('config')
     configure_database(app)
     socketio = configure_socket(app)
+    tsp = pyTSP()
     import_cities()
-    return app, socketio
+    return app, socketio, tsp
 
-app, socketio = create_app()
-
-from algorithms.pytsp import pyTSP
-tsp = pyTSP()
+app, socketio, tsp = create_app()
 
 ## Views
 
@@ -80,35 +75,13 @@ def algorithm():
 def socket_emit(method):
     @socketio.on(method)
     def function():
-        tour = 'build_tour' + 's'*(method != 'nearest_neighbor')
+        tour = 'build_tour' + 's'*(method not in ('nearest_neighbor', 'ILP_solver'))
         session['best'] = float('inf')
         emit(tour, getattr(tsp, method)())
     return function
 
-for method in ('nearest_neighbor', 'nearest_insertion', 'cheapest_insertion'):
-    socket_emit(method)
-
-@socketio.on('pairwise_exchange')
-def pairwise_exchange():
-    session['best'] = float('inf')
-    emit('build_tours', loh.pairwise_exchange())
-
-@socketio.on('node_insertion')
-def node_insertion():
-    session['best'] = float('inf')
-    emit('build_tours', loh.node_insertion())
-
-@socketio.on('edge_insertion')
-def edge_insertion():
-    session['best'] = float('inf')
-    emit('build_tours', loh.edge_insertion())
-
-@socketio.on('lp')
-def ilp_solver():
-    session['best'] = float('inf')
-    emit('build_tour', lp.ILP_solver())
-
-## Genetic algorithm
+for algorithm in tsp.algorithms:
+    socket_emit(algorithm)
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
@@ -122,7 +95,4 @@ def genetic_algorithm(data):
         emit('current_solution', (best, length))
 
 if __name__ == '__main__':
-    socketio.run(
-        app, 
-        port = int(environ.get('PORT', 5100))
-        )
+    socketio.run(app)

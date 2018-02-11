@@ -14,5 +14,8 @@ class pyTSP(
         'nearest_neighbor',
         'nearest_insertion',
         'cheapest_insertion',
-        
+        'pairwise_exchange',
+        'node_insertion',
+        'edge_insertion',
+        'ILP_solver'
         )
