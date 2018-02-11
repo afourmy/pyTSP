@@ -208,23 +208,6 @@
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
-    socket.on('current_solution', function(path, score) {
-      createPath(path, false, false, false);
-      });
-      
-    socket.on('best_solution', function(path, score) {
-      $("#score").text(Math.round(Number(score)));
-      createPath(path, false, false, true);
-      });
-  
-    socket.on('build_tour', function(path, lengths) {
-      createPath(path, lengths, true, false);
-      });
-      
-    socket.on('build_tours', function(paths, lengths) {
-      createIntermediatePaths(paths, lengths, false, false);
-      });
       
     function send_value(url, value){
       $.ajax({
@@ -246,12 +229,6 @@
     });
  
     $('#slider1').slider({
-      formatter: function(value) {
-        return 'Speed';
-      }
-    });
-    
-    $('#slider2').slider({
       formatter: function(value) {
         return 'Speed';
       }
@@ -452,6 +429,23 @@
         }
 
     {% endif %}
+    
+    socket.on('current_solution', function(path, score) {
+      createPath(path, false, false, false);
+      });
+      
+    socket.on('best_solution', function(path, score) {
+      $("#score").text(Math.round(Number(score)));
+      createPath(path, false, false, true);
+      });
+  
+    socket.on('build_tour', function(path, lengths) {
+      createPath(path, lengths, true, false);
+      });
+      
+    socket.on('build_tours', function(paths, lengths) {
+      createIntermediatePaths(paths, lengths, false, false);
+      });
   </script>
 </body>
 </html>
