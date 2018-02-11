@@ -4,12 +4,14 @@ from random import randint, randrange, shuffle
 class GeneticAlgorithm(BaseAlgorithm):
     
     crossovers = {
+        'Crossover method': 'order_crossover',
         'OC': 'order_crossover',
         'MPC': 'maximal_preservative_crossover',
         'PMC': 'partially_mapped_crossover'
         }
     
     mutations = {
+        'Mutation method': 'swap_mutation',
         'Swap': 'swap_mutation',
         'Insertion': 'insertion_mutation',
         'Displacement': 'displacement_mutation'
@@ -96,10 +98,10 @@ class GeneticAlgorithm(BaseAlgorithm):
     def create_first_generation(self):
         return [self.generate_solution() for _ in range(10)]
 
-    def cycle(self, **session):
-        generation = session['generation']
-        crossover = self.crossovers[session['crossover']]
-        mutation = self.mutations[session['mutation']]
+    def cycle(self, generation, **data):
+        print(data)
+        crossover = self.crossovers[data['crossover']]
+        mutation = self.mutations[data['mutation']]
         shuffle(generation)
         ng = []
         # first step: crossover with a Pc probability

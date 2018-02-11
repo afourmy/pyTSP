@@ -116,22 +116,15 @@ def ilp_solver():
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
-    print(data)
     if 'generation' not in session:
         session['generation'] = ga.create_first_generation()
-    new_generation, best_individual, length = ga.cycle(**session)
+    new_generation, best_individual, length = ga.cycle(session['generation'], **data)
     session['generation'] = new_generation
     if length < session['best']:
         session['best'] = length
         emit('best_solution', (best_individual, length))
     else:
         emit('current_solution', (best_individual, length))
-
-# @app.route('/<method>', methods = ['POST'])
-# def selection(method):
-#     print(method, request.form['value'])
-#     session[method] = request.form['value']
-#     return dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 if __name__ == '__main__':
     socketio.run(

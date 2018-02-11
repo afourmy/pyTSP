@@ -96,8 +96,8 @@
           <li class="list-group-item"><input id="mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
           <li class="list-group-item"><input id="crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
         </ul>
-        <div class="dropdown" id="crossover">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;">Crossover method
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="crossover">Crossover method</span>
           <span class="caret"></span></button>
           <input type='hidden' id="type" value='crossover'>
           <ul class="dropdown-menu">
@@ -106,11 +106,11 @@
             <li><a href="#">PMC</a></li>
           </ul>
         </div>
-        <div class="dropdown" id="mutation">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;">Mutation method
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="mutation">Mutation method</span>
           <span class="caret"></span></button>
           <input type='hidden' id="type" value='mutation'>
-          <ul class="dropdown-menu dd-mutation">
+          <ul class="dropdown-menu">
             <li><a href="#">Swap</a></li>
             <li><a href="#">Insertion</a></li>
             <li><a href="#">Displacement</a></li>
@@ -186,9 +186,14 @@
       function timeout() {
         var speed = $('#slider2').val();
         window.optimizationTimer = setTimeout(function () {
-          var mrate = $('#mutation_rate').slider('getValue');
-          var cr = $('#crossover_rate').slider('getValue');
-          socket.emit('genetic_algorithm', {mr: mrate});
+
+
+          socket.emit('genetic_algorithm', {
+            mr: $('#mutation_rate').slider('getValue'),
+            cr: $('#crossover_rate').slider('getValue'),
+            mutation: $('#mutation').text(),
+            crossover: $('#crossover').text()
+            });
           timeout();
           }, 50000/speed);
         };
@@ -209,24 +214,11 @@
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-      
-    function send_value(url, value){
-      $.ajax({
-        type: "POST",
-        url: url,
-        dataType: "json",
-        data: {value: value},
-        success: function(msg){
-          $('.answer').html(msg);
-          }
-        });
-      }
 
     // change drop-down value for crossover / mutation methods upon selection
     $(".dropdown-menu li a").click(function(){
-      $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-      $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-      send_value($(this).parents(".dropdown").find('#type').val(), $(this).text());
+      var type = $(this).parents(".dropdown").find('#type').val();
+      $('#' + type).text($(this).text());
     });
  
     $('#slider1').slider({
