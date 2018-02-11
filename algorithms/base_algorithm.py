@@ -34,7 +34,8 @@ class BaseAlgorithm():
     
     def __init__(self):
         self.size = len(cities)
-        
+
+    # add node k between node i and node j
     def add(self, i, j, k):
         return distances[i][k] + distances[k][j] - distances[i][j]
     

@@ -101,6 +101,10 @@ def cheapest_insertion():
 def pairwise_exchange():
     emit('build_tours', loh.pairwise_exchange())
 
+@socketio.on('node_insertion')
+def node_insertion():
+    emit('build_tours', loh.node_insertion())
+
 @socketio.on('lp')
 def ilp_solver():
     emit('build_tour', lp.ILP_solver())
