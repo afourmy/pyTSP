@@ -34,6 +34,9 @@ class BaseAlgorithm():
     
     def __init__(self):
         self.size = len(cities)
+        
+    def add(self, i, j, k):
+        return distances[i][k] + distances[k][j] - distances[i][j]
     
     def generate_solution(self):
         return sample(cities, len(cities))

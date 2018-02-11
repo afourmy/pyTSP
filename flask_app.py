@@ -54,11 +54,11 @@ def create_app(config='config'):
 
 app, socketio = create_app()
 
-from algorithms.tour_construction import TourConstruction
+from algorithms.tour_construction import TourConstructionHeuristics
 from algorithms.linear_programming import LinearProgramming
 from algorithms.genetic_algorithm import GeneticAlgorithm
 
-tc = TourConstruction()
+tch = TourConstructionHeuristics()
 lp = LinearProgramming()
 ga = GeneticAlgorithm()
 

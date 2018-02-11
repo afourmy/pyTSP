@@ -1,16 +1,6 @@
 from .base_algorithm import *
-from operator import itemgetter
 
-class TourConstructionHeuristics(BaseAlgorithm):
-
-    # find the closest neighbo in the tour or not yet visited (default) 
-    # to a given node
-    # returns the neighbor as well as the distance between the two
-    def closest_neighbor(self, tour, node, in_tour=False):
-        neighbors = distances[node]
-        current_dist = [(c, d) for c, d in neighbors.items() 
-                        if (c in tour if in_tour else c not in tour)]
-        return sorted(current_dist, key=itemgetter(1))[0]
+class LocalOptmizationHeuristics(BaseAlgorithm):
 
     # find the neighbor k closest to the tour, i.e such that
     # cik + ckj - cij is minimized with (i, j) an edge of the tour
