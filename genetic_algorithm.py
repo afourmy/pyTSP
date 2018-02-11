@@ -1,5 +1,5 @@
 from base_algorithm import *
-from random import randrange, shuffle
+from random import randint, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):
     
@@ -18,8 +18,7 @@ class GeneticAlgorithm(BaseAlgorithm):
         return solution
         
     def insertion_mutation(self, solution):
-        random_city = randint(0, self.size - 1)
-        random_position = randint(0, self.size)
+        random_city, random_position = randrange(self.size), randrange(self.size)
         city = solution.pop(random_city)
         solution.insert(random_position, city)
     
@@ -45,7 +44,7 @@ class GeneticAlgorithm(BaseAlgorithm):
             
     def maximal_preservative_crossover(self, i1, i2):
         c = len(i1)//2
-        r = randint(0, self.size)
+        r = randrange(self.size + 1)
         s1, s2 = (i1*2)[r:r+c], (i2*2)[r:r+c]
         for x in s1:
             i2.remove(x)
