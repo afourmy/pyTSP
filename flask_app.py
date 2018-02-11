@@ -86,30 +86,37 @@ def algorithm():
 
 @socketio.on('nearest_neighbor')
 def nearest_neighbor():
+    session['best'] = float('inf')
     emit('build_tour', tch.nearest_neighbor())
 
 @socketio.on('nearest_insertion')
 def nearest_insertion():
+    session['best'] = float('inf')
     emit('build_tours', tch.nearest_insertion())
 
 @socketio.on('cheapest_insertion')
 def cheapest_insertion():
+    session['best'] = float('inf')
     emit('build_tours', tch.cheapest_insertion())
 
 @socketio.on('pairwise_exchange')
 def pairwise_exchange():
+    session['best'] = float('inf')
     emit('build_tours', loh.pairwise_exchange())
 
 @socketio.on('node_insertion')
 def node_insertion():
+    session['best'] = float('inf')
     emit('build_tours', loh.node_insertion())
 
 @socketio.on('edge_insertion')
 def edge_insertion():
+    session['best'] = float('inf')
     emit('build_tours', loh.edge_insertion())
 
 @socketio.on('lp')
 def ilp_solver():
+    session['best'] = float('inf')
     emit('build_tour', lp.ILP_solver())
 
 ## Genetic algorithm
@@ -118,13 +125,12 @@ def ilp_solver():
 def genetic_algorithm(data):
     if 'generation' not in session:
         session['generation'] = ga.create_first_generation()
-    new_generation, best_individual, length = ga.cycle(session['generation'], **data)
-    session['generation'] = new_generation
+    session['generation'], best, length = ga.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length
-        emit('best_solution', (best_individual, length))
+        emit('best_solution', (best, length))
     else:
-        emit('current_solution', (best_individual, length))
+        emit('current_solution', (best, length))
 
 if __name__ == '__main__':
     socketio.run(

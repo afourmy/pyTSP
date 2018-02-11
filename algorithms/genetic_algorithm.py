@@ -1,5 +1,5 @@
 from .base_algorithm import *
-from random import randint, randrange, shuffle
+from random import randint, random, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):
     
@@ -37,6 +37,7 @@ class GeneticAlgorithm(BaseAlgorithm):
         random_city, random_position = randrange(self.size), randrange(self.size)
         city = solution.pop(random_city)
         solution.insert(random_position, city)
+        return solution
     
     def displacement_mutation(self, solution):
         a, b = self.crossover_cut()
@@ -87,8 +88,8 @@ class GeneticAlgorithm(BaseAlgorithm):
         a, b = self.crossover_cut()
         ni1, ni2 = [0]*self.size, [0]*self.size
         ni1[a:b], ni2[a:b] = i1[a:b], i2[a:b]
-        partial_mapping(i1, i2, ni1, ni2, a, b)
-        partial_mapping(i2, i1, ni2, ni1, a, b)
+        self.partial_mapping(i1, i2, ni1, ni2, a, b)
+        self.partial_mapping(i2, i1, ni2, ni1, a, b)
         ni1 = [x if x else i2[i] for i, x in enumerate(ni1)]
         ni2 = [x if x else i1[i] for i, x in enumerate(ni2)]
         return ni1, ni2
@@ -96,19 +97,19 @@ class GeneticAlgorithm(BaseAlgorithm):
     ## Core algorithm
     
     def create_first_generation(self):
-        return [self.generate_solution() for _ in range(10)]
+        return [self.generate_solution() for _ in range(100)]
 
     def cycle(self, generation, **data):
-        print(data)
-        crossover = self.crossovers[data['crossover']]
-        mutation = self.mutations[data['mutation']]
+        cr, crossover = data['cr'], self.crossovers[data['crossover']]
+        mr, mutation = data['mr'], self.mutations[data['mutation']]
+        cross, mutate = random() < cr, random() < mr
         shuffle(generation)
         ng = []
-        # first step: crossover with a Pc probability
+        # first step: crossover
         for i1, i2 in zip(generation[::2], generation[1::2]):
-            ng.extend(getattr(self, crossover)(i1, i2) if 1 else (i1, i2))
-        # second step: mutation with a Pm probability
-        ng = [getattr(self, mutation)(i) if True else i for i in ng]
+            ng.extend(getattr(self, crossover)(i1, i2) if cross else (i1, i2))
+        # second step: mutation
+        ng = [getattr(self, mutation)(i) if mutate else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
