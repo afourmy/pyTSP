@@ -366,27 +366,26 @@
     called from another function like createIntermediatePath */
     
     async function createPath(path, lengths, waitingTime, best){
-      {% if view == '2D' %}
-        var color = best ? '#d4222a' : '#0000ff';
-        var lines = best ? bestPolylines : polylines;
-        clearLines(lines);
+      var color = best ? '#d4222a' : '#0000ff';
+      var lines = best ? bestPolylines : polylines;
+      clearLines(lines);
 
-        for (i = 0; i < path.length - 1; i++) { 
-          // update the score
-          if (lengths) {
-            $("#score").text(Math.round(Number(lengths[i])));
-            }
-    
-          var source_lat = path[i][0];
-              source_lon = path[i][1];
-              
-          var destination_lat = path[i+1][0];
-              destination_lon = path[i+1][1];
-              
+      for (i = 0; i < path.length - 1; i++) { 
+        // update the score
+        if (lengths) {
+          $("#score").text(Math.round(Number(lengths[i])));
+          }
+  
+        var source_lat = path[i][0];
+            source_lon = path[i][1];
+            destination_lat = path[i+1][0];
+            destination_lon = path[i+1][1];
+            
+        {% if view == '2D' %}
           var pointA = new L.LatLng(source_lat, source_lon);
           var pointB = new L.LatLng(destination_lat, destination_lon);
           var pointList = [pointA, pointB];
-
+  
           var polyline = new L.Polyline(pointList, {
             color: color,
             weight: 3,
@@ -396,41 +395,21 @@
     
           polyline.addTo(map);
           lines.push(polyline);
-          
-          if (waitingTime) {
-            var speed = $('#slider1').val();
-            await sleep(50000/speed);
-            }
-          }
-      {% else %}
-      for (i = 0; i < polylines.length; i++) { 
-        try {
-          polylines[i].destroy();
-          }
-        catch(err) {};
-        }
-        
-      var color = best ? '#d4222a' : '#0000ff';
-      for (i = 0; i < path.length - 1; i++) { 
-        var source_lat = path[i][0];
-            source_lon = path[i][1];
-            destination_lat = path[i+1][0];
-            destination_lon = path[i+1][1];
-            
-        var polygonSD = WE.polygon(
-          [[source_lat, source_lon], [destination_lat, destination_lon],
-          [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
-        var polygonDS = WE.polygon(
-          [[destination_lat, destination_lon], [source_lat, source_lon],
-          [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
-        polylines.push(polygonSD, polygonDS)
-        
+        {% else %}
+          var polygonSD = WE.polygon(
+            [[source_lat, source_lon], [destination_lat, destination_lon],
+            [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
+          var polygonDS = WE.polygon(
+            [[destination_lat, destination_lon], [source_lat, source_lon],
+            [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
+          lines.push(polygonSD, polygonDS)
+        {% endif %}
+
         if (waitingTime) {
-          var speed = $('#speed').val();
-          await sleep(speed);
+          var speed = $('#slider1').val();
+          await sleep(50000/speed);
           }
         }
-      {% endif %}
       }
         
       async function createIntermediatePaths(paths, lengths, best){
