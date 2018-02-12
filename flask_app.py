@@ -23,7 +23,7 @@ def configure_database(app):
     db.init_app(app)
 
 def configure_socket(app):
-    async_mode, thread = None, None
+    async_mode = None
     socketio = SocketIO(app, async_mode=async_mode)
     thread_lock = Lock()
     return socketio
