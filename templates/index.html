@@ -80,13 +80,14 @@
     </div>
   </form>
   
-  <div class="well well-sm" style="z-index:500; position: absolute; top: 20px; left:50vw; height:40px">
-    <strong><font color="red"><p id="score">Length</p></font></strong>
+  <div class="panel panel-danger panel-transparent" style="z-index:500; position: absolute; top: 20px; left:45vw;">
+    <div class="panel-heading"><strong><font color="red"><p id="score"></p></font></strong></div>
   </div>
   
   <div class="panel-group" style="z-index:500; position: absolute; top: 100px; left:20px;">
     <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading">Genetic algorithm</div>
+      <div class="panel-heading"><p id="generation">Genetic algorithm</p></strong>
+      </div>
       <div class="panel-body">
         <div class="btn-group-vertical btn-block" >
           <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
@@ -179,12 +180,15 @@
         socket.emit(algorithm);
       }
 
+    var generationNumber = 0;
     function geneticAlgorithm() {
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {
         var speed = $('#slider2').val();
         window.optimizationTimer = setTimeout(function () {
+          generationNumber += 1;
+          $('#generation').text('Genetic algorithm (' + generationNumber + ')');
           socket.emit('genetic_algorithm', {
             mr: $('#mutation_rate').slider('getValue'),
             cr: $('#crossover_rate').slider('getValue'),
