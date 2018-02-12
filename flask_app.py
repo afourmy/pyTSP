@@ -11,7 +11,6 @@ path_app = dirname(abspath(__file__))
 if path_app not in path:
     path.append(path_app)
 
-from algorithms.pytsp import pyTSP
 from database import db, create_database
 from models import City
 
@@ -45,6 +44,7 @@ def create_app(config='config'):
     app.config.from_object('config')
     configure_database(app)
     socketio = configure_socket(app)
+    from algorithms.pytsp import pyTSP
     tsp = pyTSP()
     import_cities()
     return app, socketio, tsp
