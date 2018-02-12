@@ -35,6 +35,10 @@
         background: none;
     }
     
+    .score {
+        cursor: default;
+      }
+    
     .slider.slider-horizontal{
     width:10vw !important;
     }
@@ -57,10 +61,54 @@
     <script src="{{ url_for('static', filename='webgl-earth/api.js') }}"></script>
   {% endif %}
 </head>
-<body>
+<body>  
+  <div style="z-index:500; position: absolute; left:45vw; top:10px;">
+    <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
+  </div>
+
+  
+  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading">Construction heuristics</div>
+        <div class="panel-body">
+          <div class="btn-group-vertical btn-block" >
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading">Optimization heuristics</div>
+        <div class="panel-body">  
+          <div class="btn-group-vertical btn-block" >
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading">Visualization speed</div>
+        <div class="panel-body">    
+            <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
+        </div>
+      </div>
+      
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading">Deterministic algorithm</div>
+        <div class="panel-body">
+          <div class="btn-group-vertical btn-block" >
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('ILP_solver')">Linear programming</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <form id="aform" method="post">
-    <div class="btn-group" style="z-index:500; position: absolute; top: 10px; left:25vw;">  
+    <div class="btn-group" style="z-index:500; position: absolute; top: 20px; right:20px;">  
       {% if view == '2D' %}
         <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
       {% else %}
@@ -80,11 +128,7 @@
     </div>
   </form>
   
-  <div class="panel panel-danger panel-transparent" style="z-index:500; position: absolute; top: 20px; left:45vw;">
-    <div class="panel-heading"><strong><font color="red"><p id="score"></p></font></strong></div>
-  </div>
-  
-  <div class="panel-group" style="z-index:500; position: absolute; top: 100px; left:20px;">
+  <div class="panel-group" style="z-index:500; position: absolute; top: 150px; right:20px;">
     <div class="panel panel-primary panel-transparent">
       <div class="panel-heading"><p id="generation">Genetic algorithm</p></strong>
       </div>
@@ -120,46 +164,6 @@
       </div>
     </div>
   </div>
-  
-  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Construction heuristics</div>
-        <div class="panel-body">
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Optimization heuristics</div>
-        <div class="panel-body">  
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Visualization speed</div>
-        <div class="panel-body">    
-            <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
-        </div>
-      </div>
-      
-      <div class="panel panel-danger panel-transparent">
-        <div class="panel-heading">Deterministic algorithm</div>
-        <div class="panel-body">
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-danger" onclick="tourConstruction('ILP_solver')">Linear programming</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
   {% if view == '2D' %}
     <div id="map">
@@ -274,7 +278,7 @@
     // 2D code
     {% if view == '2D' %}
 
-      var map = L.map('map').setView([39, -98], 5);
+      var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
       var osm_layer = L.tileLayer(layers['osm']);
       map.addLayer(osm_layer);
       var current_layer = osm_layer;
