@@ -74,7 +74,7 @@ def algorithm():
 def socket_emit(method):
     @socketio.on(method)
     def function():
-        tour = 'build_tour' + 's'*(method not in ('nearest_neighbor', 'ILP_solver'))
+        tour = 'build_tours' #+ 's'*(method not in ('nearest_neighbor', 'ILP_solver'))
         session['best'] = float('inf')
         emit(tour, getattr(tsp, method)())
     return function
