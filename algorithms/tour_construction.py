@@ -43,7 +43,6 @@ class TourConstructionHeuristics(BaseAlgorithm):
             tour_lengths.append(tour_length)
             if tour_length < best_length:
                 best_length, best_lengths, best_tour = tour_length,tour_lengths, tour
-        # solution = 
         intermediate_steps = [[]]
         for point in self.format_solution(best_tour):
             intermediate_steps.append(intermediate_steps[-1] + [point])
