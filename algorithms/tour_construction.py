@@ -3,14 +3,14 @@ from operator import itemgetter
 
 class TourConstructionHeuristics(BaseAlgorithm):
 
-    # find the closest neighbo in the tour or not yet visited (default) 
-    # to a given node
+    # find the closest neighbor (or the farthest) to a given node in the tour
+    # or not yet visited (default) 
     # returns the neighbor as well as the distance between the two
-    def closest_neighbor(self, tour, node, in_tour=False):
+    def closest_neighbor(self, tour, node, in_tour=False, farthest=False):
         neighbors = distances[node]
         current_dist = [(c, d) for c, d in neighbors.items() 
-                        if (c in tour if in_tour else c not in tour)]
-        return sorted(current_dist, key=itemgetter(1))[0]
+                        if (c in tour if in_tour else c not in tour)]       
+        return sorted(current_dist, key=itemgetter(1))[-farthest]
 
     # find the neighbor k closest to the tour, i.e such that
     # cik + ckj - cij is minimized with (i, j) an edge of the tour
@@ -48,18 +48,18 @@ class TourConstructionHeuristics(BaseAlgorithm):
             intermediate_steps.append(intermediate_steps[-1] + [point])
         return intermediate_steps[2:], best_lengths
 
-    def nearest_insertion(self):
+    def nearest_insertion(self, farthest=False):
         best_length, best_tours = float('inf'), []
         for city in cities:
             # we start the tour with one node I
             tour, tours, tour_lengths = [city], [], []
             # we find the closest node R to the first node
-            neighbor, length = self.closest_neighbor(tour, city)
+            neighbor, length = self.closest_neighbor(tour, city, False, farthest)
             tour.append(neighbor)
             tour_length = length
             tour_lengths.append(tour_length)
             while len(tour) != len(cities):
-                best, min_distance = None, float('inf')
+                best, min_distance = None, 0 if farthest else float('inf')
                 # (selection step) given a sub-tour,we find node r not in the 
                 # sub-tour closest to any node j in the sub-tour, 
                 # i.e. with minimal c_rj
@@ -67,8 +67,8 @@ class TourConstructionHeuristics(BaseAlgorithm):
                     if candidate in tour:
                         continue
                     # we consider only the distances to nodes already in the tour
-                    _, length = self.closest_neighbor(tour, candidate, True)
-                    if length < min_distance:
+                    _, length = self.closest_neighbor(tour, candidate, True, farthest)
+                    if (length > min_distance if farthest else length < min_distance):
                         best, min_distance = candidate, length
                 # (insertion step) we find the arc (i, j) in the sub-tour which
                 # minimizes cir + crj - cij, and we insert r between i and j
@@ -89,7 +89,10 @@ class TourConstructionHeuristics(BaseAlgorithm):
                 best_length, best_tours = tour_length, tours
                 best_lengths = tour_lengths
         best_lengths = [sum(best_lengths[:3])] + best_lengths[3:]
-        return [self.format_solution(step) for step in best_tours], best_lengths       
+        return [self.format_solution(step) for step in best_tours], best_lengths  
+
+    def farthest_insertion(self):
+        return self.nearest_insertion(farthest=True)
             
     def cheapest_insertion(self):
         best_tour, best_length = None, float('inf')

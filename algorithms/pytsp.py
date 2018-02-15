@@ -13,6 +13,7 @@ class pyTSP(
     algorithms = (
         'nearest_neighbor',
         'nearest_insertion',
+        'farthest_insertion',
         'cheapest_insertion',
         'pairwise_exchange',
         'node_insertion',
