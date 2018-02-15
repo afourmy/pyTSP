@@ -1,5 +1,4 @@
 from .base_algorithm import *
-from operator import itemgetter
 from random import randint, random, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):
@@ -97,25 +96,23 @@ class GeneticAlgorithm(BaseAlgorithm):
 
     ## Core algorithm
     
-    def selection(self, generation):
-        sum_inverse = sum(1/l for _, l in generation)
-        generation = [i for i, l in generation if random() < 1/(l*sum_inverse)]
-        while len(generation) < 50:
+    def fill_generation(self, generation):
+        while len(generation) < 100:
             generation.append(self.generate_solution())
-        shuffle(generation)
         return generation
 
     def cycle(self, generation, **data):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
         # selection: we keep only the 10 best individual of the last generation
-        ng, generation = [], self.selection(generation)
+        ng, generation = [], generation[:10]
+        # we fill the generation with new individuals and shuffle it
+        shuffle(self.fill_generation(generation))
         # crossover step: parents par, new generation ng
         for par in zip(generation[::2], generation[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
         # mutation step
         ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
         # order the generation according to the fitness value
-        ng = sorted([(i, self.compute_length(i)) for i in ng], key=itemgetter(1))
-        
-        return ng, self.format_solution(ng[0][0]), ng[0][1]
+        ng = sorted(ng, key=self.compute_length)
+        return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
