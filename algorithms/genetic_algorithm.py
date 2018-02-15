@@ -97,7 +97,7 @@ class GeneticAlgorithm(BaseAlgorithm):
     ## Core algorithm
     
     def fill_generation(self, generation):
-        while len(generation) < 100:
+        while len(generation) < 70:
             generation.append(self.generate_solution())
         return generation
 
@@ -105,9 +105,9 @@ class GeneticAlgorithm(BaseAlgorithm):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
         # selection: we keep only the 10 best individual of the last generation
-        ng, generation = [], generation[:10]
+        ng, generation = [], self.fill_generation(generation[:30])
         # we fill the generation with new individuals and shuffle it
-        shuffle(self.fill_generation(generation))
+        shuffle(generation)
         # crossover step: parents par, new generation ng
         for par in zip(generation[::2], generation[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
@@ -115,4 +115,5 @@ class GeneticAlgorithm(BaseAlgorithm):
         ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
+        print('o')
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
