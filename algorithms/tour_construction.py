@@ -46,7 +46,6 @@ class TourConstructionHeuristics(BaseAlgorithm):
         intermediate_steps = [[]]
         for point in self.format_solution(best_tour):
             intermediate_steps.append(intermediate_steps[-1] + [point])
-        # print(intermediate_steps)
         return intermediate_steps[2:], best_lengths
 
     def nearest_insertion(self):
