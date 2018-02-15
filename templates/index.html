@@ -351,10 +351,10 @@
     function clearLines(lines){
       for (i = 0; i < lines.length; i++) {
         {% if view == '2D' %}
-          map.removeLayer(polylines[i]);
+          map.removeLayer(lines[i]);
         {% else %}
           try {
-            polylines[i].destroy();
+            lines[i].destroy();
             }
           catch(err) {};
         {% endif %}
