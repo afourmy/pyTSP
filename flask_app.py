@@ -30,7 +30,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:    
         for city_dict in load(data):
-            if int(city_dict['population']) < 800000:
+            if int(city_dict['population']) < 600000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -83,7 +83,7 @@ for algorithm in tsp.algorithms:
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
     if 'generation' not in session:
-        session['generation'] = tsp.create_first_generation()
+        session['generation'] = []
     session['generation'], best, length = tsp.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length

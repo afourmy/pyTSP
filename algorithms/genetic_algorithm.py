@@ -1,4 +1,5 @@
 from .base_algorithm import *
+from operator import itemgetter
 from random import randint, random, randrange, shuffle
 
 class GeneticAlgorithm(BaseAlgorithm):
@@ -96,20 +97,25 @@ class GeneticAlgorithm(BaseAlgorithm):
 
     ## Core algorithm
     
-    def create_first_generation(self):
-        return [self.generate_solution() for _ in range(10)]
+    def selection(self, generation):
+        sum_inverse = sum(1/l for _, l in generation)
+        generation = [i for i, l in generation if random() < 1/(l*sum_inverse)]
+        while len(generation) < 50:
+            generation.append(self.generate_solution())
+        shuffle(generation)
+        return generation
 
     def cycle(self, generation, **data):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
-        cross, mutate = random() < cr, random() < mr
-        shuffle(generation)
-        ng = []
-        # first step: crossover
-        for i1, i2 in zip(generation[::2], generation[1::2]):
-            ng.extend(getattr(self, crossover)(i1, i2) if cross else (i1, i2))
-        # second step: mutation
-        ng = [getattr(self, mutation)(i) if mutate else i for i in ng]
+        # selection: we keep only the 10 best individual of the last generation
+        ng, generation = [], self.selection(generation)
+        # crossover step: parents par, new generation ng
+        for par in zip(generation[::2], generation[1::2]):
+            ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
+        # mutation step
+        ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
         # order the generation according to the fitness value
-        ng = sorted(ng, key=self.compute_length)
-        return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
+        ng = sorted([(i, self.compute_length(i)) for i in ng], key=itemgetter(1))
+        
+        return ng, self.format_solution(ng[0][0]), ng[0][1]
