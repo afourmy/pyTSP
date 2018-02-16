@@ -74,7 +74,7 @@ i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 
 ```
 - Consider every pair of edges.
-- For a given pair of edge, there is only one way of deleting and reconnecting the edges to obtain
+- Given a pair of edge, there is only one way of deleting and reconnecting it to obtain
 a valid tour. If this new tour is shorter, make the change.
 - Repeat until no further improvement can be made.
 ```
@@ -85,7 +85,17 @@ a valid tour. If this new tour is shorter, make the change.
 
 ```
 - Consider every node.
-- For a given node, remove the node from the tour and insert at the best possible position.
+- Given a node, remove it from the tour and insert it at the best possible position.
+- Repeat until no further improvement can be made.
+```
+
+## Edge insertion
+
+![Edge insertion](readme/edge_insertion.png)
+
+```
+- Consider every edge.
+- Given an edge, remove it from the tour and insert it at the best possible position.
 - Repeat until no further improvement can be made.
 ```
 
