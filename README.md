@@ -101,6 +101,8 @@ a valid tour. If this new tour is shorter, make the change.
 
 # Linear programming
 
+![First constraints](readme/linear_programming.png)
+
 # Genetic algorithm
 
 # Getting started
