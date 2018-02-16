@@ -20,6 +20,7 @@ The following algorithms are implemented in pyTSP:
 - Construction heuristics
   - Nearest neighbor
   - Nearest insertion
+  - Farthest insertion
   - Cheapest insertion
 - Optimization heuristics
   - Pairwise exchange (2-opt)
@@ -51,7 +52,15 @@ visualization
 # Cheapest insertion
 ```
 - Start from a random city.
-- Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimize d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
+- Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
+- Insert k between i and j.
+- Repeat until every city has been visited.
+```
+
+# Farthest insertion
+```
+- Start from a random city.
+- Find the city which insertion in the tour causes the largest increase in length, i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
 - Insert k between i and j.
 - Repeat until every city has been visited.
 ```
