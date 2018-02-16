@@ -8,10 +8,6 @@ It provides a geographical step-by-step visualization of each of these algorithm
 ![eNMS](readme/pyTSP.gif)
 
 **You can find a demo of pyTSP on a small graph made of all U.S cities with a population larger than 800 000 inhabitants. _[here](http://afourmy.pythonanywhere.com/)_ !**
-- Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimize d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
-- Insert k between i and j.
-- Repeat until every city has been visited.
-```
 
 # Algorithms
 
