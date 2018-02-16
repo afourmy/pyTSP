@@ -33,15 +33,15 @@ The following algorithms are implemented in pyTSP:
 
 ## Nearest neighbor
 
+
 ```
 - Start from a random city.
 - Travel to the nearest unvisited city.
 - Repeat until every city has been visited.
 ```
 
-visualization
-
 ## Nearest insertion
+
 ```
 - Start from a random city.
 - Find the city closest to the (partial) tour, i.e the city i which minimizes d(i, j) with j a city already in the tour.
@@ -49,7 +49,8 @@ visualization
 - Repeat until every city has been visited.
 ```
 
-# Cheapest insertion
+## Cheapest insertion
+
 ```
 - Start from a random city.
 - Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
@@ -57,13 +58,33 @@ visualization
 - Repeat until every city has been visited.
 ```
 
-# Farthest insertion
+## Farthest insertion
+
 ```
 - Start from a random city.
 - Find the city which insertion in the tour causes the largest increase in length, i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
 - Insert k between i and j.
 - Repeat until every city has been visited.
 ```
+
+# Optimization heuristics
+
+## Pairwise exchange (2-opt)
+
+![Pairwise exchange](readme/pairwise_exchange.png)
+
+A pairwise exchange consists in deleting two edges and reconnecting the paths to obtain a shorter tour.  There is only one other way of reconnecting paths to get a valid tour.
+```
+- Consider every pair of edges.
+- If this results in a shorter tour, delete the edges and reconnect the path.
+- Repeat until no more improvement can be made.
+```
+
+## Node insertion
+
+# Linear programming
+
+# Genetic algorithm
 
 # Getting started
 
