@@ -40,7 +40,7 @@ The following algorithms are implemented in pyTSP:
 
 ```
 - Start from a random city.
-- Find the city closest to the (partial) tour, i.e the city i which minimizes d(i, j) with j a city already in the tour.
+- Find the city closest to the (partial) tour, i.e the city i which minimizes d(i, j)\ with j a city already in the tour.
 - Insert i before or after j, depending on which option is shorter.
 - Repeat until every city has been visited.
 ```
@@ -49,7 +49,7 @@ The following algorithms are implemented in pyTSP:
 
 ```
 - Start from a random city.
-- Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
+- Find the city which insertion in the tour causes the smallest increase in length,\ i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
 - Insert k between i and j.
 - Repeat until every city has been visited.
 ```
@@ -58,7 +58,7 @@ The following algorithms are implemented in pyTSP:
 
 ```
 - Start from a random city.
-- Find the city which insertion in the tour causes the largest increase in length, i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
+- Find the city which insertion in the tour causes the largest increase in length,\ i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
 - Insert k between i and j.
 - Repeat until every city has been visited.
 ```
