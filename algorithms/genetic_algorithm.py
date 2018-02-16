@@ -102,18 +102,18 @@ class GeneticAlgorithm(BaseAlgorithm):
         return generation
 
     def cycle(self, generation, **data):
-        cr, crossover = data['cr'], self.crossovers[data['crossover']]
+        # cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
+        print(mutation)
         # selection: we keep only the 10 best individual of the last generation
-        ng, generation = [], self.fill_generation(generation[:30])
-        # we fill the generation with new individuals and shuffle it
-        shuffle(generation)
+        ng, generation = [], self.fill_generation(generation[:10])
+        ng = generation
         # crossover step: parents par, new generation ng
-        for par in zip(generation[::2], generation[1::2]):
-            ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
+        # for par in zip(generation[::2], generation[1::2]):
+            # ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
         # mutation step
-        ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
+        ng = [getattr(self, mutation)(i) for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
-        print('o')
+        print(list(map(self.compute_length, ng)))
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])

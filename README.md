@@ -13,6 +13,49 @@ It provides a geographical step-by-step visualization of each of these algorithm
 - Repeat until every city has been visited.
 ```
 
+# Algorithms
+
+The following algorithms are implemented in pyTSP:
+
+- Construction heuristics
+  - Nearest neighbor
+  - Nearest insertion
+  - Cheapest insertion
+- Optimization heuristics
+  - Pairwise exchange (2-opt)
+  - Node insertion
+  - Edge insertion
+- Linear programming
+- Genetic algorithm
+
+# Construction heuristics
+
+## Nearest neighbor
+
+```
+- Start from a random city.
+- Travel to the nearest unvisited city.
+- Repeat until every city has been visited.
+```
+
+visualization
+
+## Nearest insertion
+```
+- Start from a random city.
+- Find the city closest to the (partial) tour, i.e the city i which minimizes d(i, j) with j a city already in the tour.
+- Insert i before or after j, depending on which option is shorter.
+- Repeat until every city has been visited.
+```
+
+# Cheapest insertion
+```
+- Start from a random city.
+- Find the city which insertion in the tour causes the smallest increase in length, i.e the city k which minimize d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
+- Insert k between i and j.
+- Repeat until every city has been visited.
+```
+
 # Getting started
 
 The following modules are used in pyTSP:
@@ -56,7 +99,7 @@ You can contact me at my personal email address:
 
 or on the [Network to Code slack](http://networktocode.herokuapp.com "Network to Code slack"). (@minto, channel #enms)
 
-# Credits
+# Credits 
 
 [Bootstrap](https://getbootstrap.com/ "Bootstrap"): Front-end HTML/CSS framework.
 

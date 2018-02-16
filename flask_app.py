@@ -88,8 +88,8 @@ def genetic_algorithm(data):
     if length < session['best']:
         session['best'] = length
         emit('best_solution', (best, length))
-    else:
-        emit('current_solution', (best, length))
+    # else:
+        # emit('current_solution', (best, length))
 
 if __name__ == '__main__':
     socketio.run(app)
