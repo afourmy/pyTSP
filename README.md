@@ -7,7 +7,7 @@ It provides a geographical step-by-step visualization of each of these algorithm
 
 ![eNMS](readme/pyTSP.gif)
 
-**You can find a demo of pyTSP on a small graph made of all U.S cities with a population larger than 800 000 inhabitants. _[here](http://afourmy.pythonanywhere.com/)_ !**
+**You can find a demo of pyTSP on a small graph made of all U.S cities with a population larger than 800 000 inhabitants. _[here](http://google.com/)_ !**
 
 # Algorithms
 
@@ -72,10 +72,10 @@ i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 
 ![Pairwise exchange](readme/pairwise_exchange.png)
 
-A pairwise exchange consists in deleting two edges and reconnecting the paths to obtain a shorter tour.  There is only one other way of reconnecting paths to get a valid tour.
 ```
 - Consider every pair of edges.
-- If this results in a shorter tour, delete the edges and reconnect the path.
+- For a given pair of edge, there is only one way of deleting and reconnecting the edges to obtain
+a valid tour. If this new tour is shorter, make the change.
 - Repeat until no more improvement can be made.
 ```
 
@@ -89,8 +89,10 @@ A pairwise exchange consists in deleting two edges and reconnecting the paths to
 
 The following modules are used in pyTSP:
 ```
-flask (web framework)
+flask
+flask_socketio (sockets)
 flask_sqlalchemy (database)
+cvxopt (linear programming)
 ```
 
 In order to use pyTSP, you need to:
