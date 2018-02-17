@@ -1,10 +1,11 @@
 from .base_algorithm import *
 from functools import partialmethod
 
+
 class LocalOptmizationHeuristics(BaseAlgorithm):
-    
+
     ## Pairwise exchange (2-opt)
-    
+
     # swap two edges
     def swap(self, solution, x, y):
         return solution[:x] + solution[x:y+1][::-1] + solution[y+1:]
@@ -45,6 +46,6 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
                         tours.append(solution)
                         lengths.append(best)
         return [self.format_solution(step) for step in tours], lengths
-    
+
     node_insertion = partialmethod(substring_insertion, 1)
     edge_insertion = partialmethod(substring_insertion, 2)
