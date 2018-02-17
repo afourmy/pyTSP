@@ -57,8 +57,6 @@ def create_app(config='config'):
 
 app, socketio, tsp = create_app()
 
-## Views
-
 
 @app.route('/', methods=['GET', 'POST'])
 def algorithm():
