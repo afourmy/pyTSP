@@ -1,22 +1,23 @@
 from .base_algorithm import *
 from random import randint, random, randrange, shuffle
 
+
 class GeneticAlgorithm(BaseAlgorithm):
-    
+
     crossovers = {
         'Crossover method': 'order_crossover',
         'OC': 'order_crossover',
         'MPC': 'maximal_preservative_crossover',
         'PMC': 'partially_mapped_crossover'
         }
-    
+
     mutations = {
         'Mutation method': 'swap_mutation',
         'Swap': 'swap_mutation',
         'Insertion': 'insertion_mutation',
         'Displacement': 'displacement_mutation'
         }
-    
+
     def __init__(self):
         super().__init__()
         self.crossover = 'order_crossover'
@@ -25,20 +26,20 @@ class GeneticAlgorithm(BaseAlgorithm):
     def crossover_cut(self):
         first_cut = randint(1, self.size - 2)
         return first_cut, randint(first_cut + 1, self.size)
-    
+
     ## Mutation methods
 
     def swap_mutation(self, solution):
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
         return solution
-        
+
     def insertion_mutation(self, solution):
         random_city, random_position = randrange(self.size), randrange(self.size)
         city = solution.pop(random_city)
         solution.insert(random_position, city)
         return solution
-    
+
     def displacement_mutation(self, solution):
         a, b = self.crossover_cut()
         random_position = randint(0, self.size)
@@ -52,13 +53,15 @@ class GeneticAlgorithm(BaseAlgorithm):
         a, b = self.crossover_cut()
         ni1, ni2, i1, i2 = i1[a:b], i2[a:b], i1[b:] + i1[:b], i2[b:] + i2[:b]
         for x in i1:
-            if x in ni2: continue
+            if x in ni2:
+                continue
             ni2.append(x)
         for x in i2:
-            if x in ni1: continue
+            if x in ni1:
+                continue
             ni1.append(x)
         return ni1, ni2
-            
+
     def maximal_preservative_crossover(self, i1, i2):
         c = len(i1)//2
         r = randrange(self.size + 1)
@@ -69,7 +72,7 @@ class GeneticAlgorithm(BaseAlgorithm):
             i1.remove(x)
         ni1, ni2 = s2 + i1, s1 + i2
         return ni1, ni2
-    
+
     def partial_mapping(self, i1, i2, ni1, ni2, a, b):
         for x in i2[a:b]:
             if x in i1[a:b]:
@@ -83,7 +86,7 @@ class GeneticAlgorithm(BaseAlgorithm):
                     break
                 else:
                     curr = ni2[i2.index(j)]
-        
+
     def partially_mapped_crossover(self, i1, i2):
         a, b = self.crossover_cut()
         ni1, ni2 = [0]*self.size, [0]*self.size
@@ -95,7 +98,7 @@ class GeneticAlgorithm(BaseAlgorithm):
         return ni1, ni2
 
     ## Core algorithm
-    
+
     def fill_generation(self, generation):
         while len(generation) < 70:
             generation.append(self.generate_solution())
@@ -109,11 +112,10 @@ class GeneticAlgorithm(BaseAlgorithm):
         ng, generation = [], self.fill_generation(generation[:10])
         ng = generation
         # crossover step: parents par, new generation ng
-        # for par in zip(generation[::2], generation[1::2]):
-            # ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
+        for par in zip(generation[::2], generation[1::2]):
+            ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
         # mutation step
         ng = [getattr(self, mutation)(i) for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
-        print(list(map(self.compute_length, ng)))
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
