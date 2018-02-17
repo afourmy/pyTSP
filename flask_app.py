@@ -14,12 +14,15 @@ if path_app not in path:
 from database import db, create_database
 from models import City
 
+
 def configure_database(app):
     create_database()
+
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
     db.init_app(app)
+
 
 def configure_socket(app):
     async_mode = None
@@ -27,10 +30,11 @@ def configure_socket(app):
     thread_lock = Lock()
     return socketio
 
+
 def import_cities():
-    with open(join(path_app, 'data', 'cities.json')) as data:    
+    with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 600000:
+            if int(city_dict['population']) < 1000000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -38,6 +42,7 @@ def import_cities():
             db.session.commit()
         except sql_exception.IntegrityError:
             db.session.rollback()
+
 
 def create_app(config='config'):
     app = Flask(__name__)
@@ -49,27 +54,31 @@ def create_app(config='config'):
     import_cities()
     return app, socketio, tsp
 
+
 app, socketio, tsp = create_app()
 
 ## Views
 
-@app.route('/', methods = ['GET', 'POST'])
+
+@app.route('/', methods=['GET', 'POST'])
 def algorithm():
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
     view = request.form['view'] if 'view' in request.form else '2D'
+    cities = {
+        city.id: {
+            property: getattr(city, property)
+            for property in City.properties
+            }
+        for city in City.query.all()
+        }
     return render_template(
         'index.html',
-        view = view,
-        cities = {
-            city.id: {
-                property: getattr(city, property)
-                for property in City.properties
-                }
-            for city in City.query.all()
-            },
-        async_mode = socketio.async_mode
+        view=view,
+        cities=cities,
+        async_mode=socketio.async_mode
         )
+
 
 def socket_emit(method):
     @socketio.on(method)
@@ -77,8 +86,11 @@ def socket_emit(method):
         session['best'] = float('inf')
         emit('build_tours', getattr(tsp, method)())
     return function
+
+
 for algorithm in tsp.algorithms:
     socket_emit(algorithm)
+
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
@@ -88,8 +100,9 @@ def genetic_algorithm(data):
     if length < session['best']:
         session['best'] = length
         emit('best_solution', (best, length))
-    # else:
-        # emit('current_solution', (best, length))
+    else:
+        emit('current_solution', (best, length))
+
 
 if __name__ == '__main__':
     socketio.run(app)
