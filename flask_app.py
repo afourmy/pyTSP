@@ -1,5 +1,5 @@
 from threading import Lock
-from flask import Flask, render_template, request, session
+from flask import Flask, jsonify, render_template, request, session
 from flask_socketio import emit, SocketIO
 from json import dumps, load
 from os.path import abspath, dirname, join
@@ -58,7 +58,7 @@ app, socketio, tsp = create_app()
 
 
 @app.route('/', methods=['GET', 'POST'])
-def algorithm():
+def index():
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
     view = request.form['view'] if 'view' in request.form else '2D'
@@ -76,14 +76,10 @@ def algorithm():
         async_mode=socketio.async_mode
         )
 
-
-def socket_emit(method):
-    @socketio.on(method)
-    def function():
-        session['best'] = float('inf')
-        emit('draw', (*getattr(tsp, method)(), False))
-    return function
-
+@app.route('/<algorithm>', methods=['POST'])
+def algorithm(algorithm):
+    session['best'], data = float('inf'), (*getattr(tsp, algorithm)(), False)
+    return jsonify(data)
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
@@ -95,8 +91,8 @@ def genetic_algorithm(data):
         emit('draw', ([best], [length], True))
 
 
-for algorithm in tsp.algorithms:
-    socket_emit(algorithm)
+# for algorithm in tsp.algorithms:
+    # socket_emit(algorithm)
 
 if __name__ == '__main__':
     socketio.run(app)

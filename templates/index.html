@@ -182,7 +182,14 @@
           clearTimeout(window.optimizationTimer);
           window.optimizationTimer = 0;
           }
-        socket.emit(algorithm);
+        $.ajax({
+            type: "POST",
+            url: "/" + algorithm,
+            dataType: "json",
+            success: function(data){
+                console.log(data);
+            }
+        });
       }
 
     var generationNumber = 0;
