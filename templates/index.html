@@ -62,8 +62,25 @@
   {% endif %}
 </head>
 <body>  
-  <div style="z-index:500; position: absolute; left:45vw; top:10px;">
+
+  <div class="btn-group" style="z-index:500; position: absolute; left:45vw; top:10px;">  
     <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
+      {% if view == '2D' %}
+        <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
+      {% else %}
+        <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
+      {% endif %}
+
+      <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
+          <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
+          <li><a onclick="switch_layer('nasa')"> NASA </a></li>
+        </ul>
+      </div> 
   </div>
 
   
@@ -98,38 +115,26 @@
         </div>
       </div>
       
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Deterministic algorithm</div>
-        <div class="panel-body">
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('ILP_solver')">Linear programming</button>
-          </div>
+
+    </div>
+
+  <form id="aform" method="post">
+    
+
+    </div>
+  </form>
+  
+  <div class="panel-group" style="z-index:500; position: absolute; top: 50px; right:20px;">
+  
+    <div class="panel panel-primary panel-transparent">
+      <div class="panel-heading">Deterministic algorithm</div>
+      <div class="panel-body">
+        <div class="btn-group-vertical btn-block" >
+          <button type="button" class="btn btn-primary" onclick="tourConstruction('ILP_solver')">Linear programming</button>
         </div>
       </div>
     </div>
 
-  <form id="aform" method="post">
-    <div class="btn-group" style="z-index:500; position: absolute; top: 20px; right:20px;">  
-      {% if view == '2D' %}
-        <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
-      {% else %}
-        <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
-      {% endif %}
-
-      <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
-          <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
-          <li><a onclick="switch_layer('nasa')"> NASA </a></li>
-        </ul>
-      </div> 
-    </div>
-  </form>
-  
-  <div class="panel-group" style="z-index:500; position: absolute; top: 150px; right:20px;">
     <div class="panel panel-primary panel-transparent">
       <div class="panel-heading"><p id="generation">Genetic algorithm</p></strong>
       </div>
@@ -187,7 +192,6 @@
             url: "/" + algorithm,
             dataType: "json",
             success: function(data){
-                console.log(data);
                 draw(...data);
             }
         });
