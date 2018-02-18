@@ -253,19 +253,10 @@
       }
     });
     
-    // creation of the socket listeners for all algorithms
-
-    socket.on('current_solution', function(path, score) {
-      draw(path, false, false);
-      });
-      
-    socket.on('best_solution', function(path, score) {
-      $("#score").text(Math.round(Number(score)));
-      draw(path, false, true);
-      });
+    // creation of the socket listener
   
-    socket.on('build_tours', function(paths, lengths) {
-      draw(paths, lengths, false);
+    socket.on('draw', function(paths, lengths, best) {
+      draw(paths, lengths, best);
       });
 
     /* The following part is made of the code that depends on the dimension
@@ -364,9 +355,7 @@
       clearLines(bestPolylines);
       }
     
-    /* Function to draw a path, with optional arguments: 
-    - waiting time between the creation of two edges for better visualization 
-    of tour construction heuristics 
+    /* Function to draw a serie of paths, with optional arguments: 
     - lengths for updating the length in real-time, if createPath is not
     called from another function like createIntermediatePath */
 

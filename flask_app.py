@@ -81,12 +81,8 @@ def socket_emit(method):
     @socketio.on(method)
     def function():
         session['best'] = float('inf')
-        emit('build_tours', getattr(tsp, method)())
+        emit('draw', (*getattr(tsp, method)(), False))
     return function
-
-
-for algorithm in tsp.algorithms:
-    socket_emit(algorithm)
 
 
 @socketio.on('genetic_algorithm')
@@ -96,10 +92,11 @@ def genetic_algorithm(data):
     session['generation'], best, length = tsp.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length
-        emit('build_tours', ([best], [length], True))
-    # else:
-        # emit('current_solution', ([best], [length]))
+        emit('draw', ([best], [length], True))
 
+
+for algorithm in tsp.algorithms:
+    socket_emit(algorithm)
 
 if __name__ == '__main__':
     socketio.run(app)
