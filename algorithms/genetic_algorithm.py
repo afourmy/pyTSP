@@ -1,8 +1,8 @@
-from .base_algorithm import *
-from random import randint, random, randrange, shuffle
+from .local_optimization import *
+from random import randint, random, randrange, sample, shuffle
 
 
-class GeneticAlgorithm(BaseAlgorithm):
+class GeneticAlgorithm(LocalOptmizationHeuristics):
 
     crossovers = {
         'Crossover method': 'order_crossover',
@@ -22,10 +22,6 @@ class GeneticAlgorithm(BaseAlgorithm):
         super().__init__()
         self.crossover = 'order_crossover'
         self.mutation = 'random_mutation'
-
-    def crossover_cut(self):
-        first_cut = randint(1, self.size - 2)
-        return first_cut, randint(first_cut + 1, self.size)
 
     ## Mutation methods
 
@@ -48,6 +44,10 @@ class GeneticAlgorithm(BaseAlgorithm):
         return solution[:random_position] + substring + solution[random_position:]
 
     ## Crossover methods
+
+    def crossover_cut(self):
+        first_cut = randint(1, self.size - 2)
+        return first_cut, randint(first_cut + 1, self.size)
 
     def order_crossover(self, i1, i2):
         a, b = self.crossover_cut()
@@ -100,22 +100,27 @@ class GeneticAlgorithm(BaseAlgorithm):
     ## Core algorithm
 
     def fill_generation(self, generation):
+        # we select 30 random elements and keep only the best 10
+        if generation:
+            generation = sorted(sample(generation, 30), key=self.compute_length)
+        generation = list(map(self.pairwise_exchange, generation[10:]))
         while len(generation) < 70:
             generation.append(self.generate_solution())
         return generation
 
     def cycle(self, generation, **data):
-        # cr, crossover = data['cr'], self.crossovers[data['crossover']]
+        cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
-        print(mutation)
         # selection: we keep only the 10 best individual of the last generation
-        ng, generation = [], self.fill_generation(generation[:10])
-        ng = generation
+        ng = self.fill_generation(generation)
         # crossover step: parents par, new generation ng
         for par in zip(generation[::2], generation[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
+            # print(par, ng)
         # mutation step
         ng = [getattr(self, mutation)(i) for i in ng]
+        print(data)
+        print(cr, mr, mutation, crossover)
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])

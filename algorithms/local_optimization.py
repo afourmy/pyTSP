@@ -10,8 +10,8 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
     def swap(self, solution, x, y):
         return solution[:x] + solution[x:y+1][::-1] + solution[y+1:]
 
-    def pairwise_exchange(self):
-        solution = self.generate_solution()
+    def pairwise_exchange(self, ga_solution=None):
+        solution = ga_solution or self.generate_solution()
         stable, best = False, self.compute_length(solution)
         lengths, tours = [best], [solution]
         while not stable:
@@ -25,6 +25,8 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
                         tours.append(solution)
                         lengths.append(best)
                         stable = False
+        if ga_solution:  
+            return tours[-1]
         return [self.format_solution(step) for step in tours], lengths
 
     ## Node and edge insertion

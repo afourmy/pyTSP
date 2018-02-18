@@ -4,14 +4,16 @@ from models import City
 from random import sample
 
 
+def hav(angle):
+    return sin(angle/2)**2
+
+
 def haversine_distance(cityA, cityB):
     coords = (*coordinates[cityA], *coordinates[cityB])
     # we convert from decimal degree to radians
     lat_cityA, lon_cityA, lat_cityB, lon_cityB = map(radians, coords)
     delta_lon = lon_cityB - lon_cityA
     delta_lat = lat_cityB - lat_cityA
-    # haversine function
-    hav = lambda t: sin(t/2)**2
     a = hav(delta_lat) + cos(lat_cityA) * cos(lat_cityB) * hav(delta_lon)
     c = 2 * asin(sqrt(a))
     # approximate radius of the Earth: 6371 km

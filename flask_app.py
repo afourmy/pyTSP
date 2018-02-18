@@ -34,7 +34,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 1000000:
+            if int(city_dict['population']) < 500000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -42,7 +42,6 @@ def import_cities():
             db.session.commit()
         except sql_exception.IntegrityError:
             db.session.rollback()
-
 
 def create_app(config='config'):
     app = Flask(__name__)
@@ -97,9 +96,9 @@ def genetic_algorithm(data):
     session['generation'], best, length = tsp.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length
-        emit('best_solution', (best, length))
-    else:
-        emit('current_solution', (best, length))
+        emit('build_tours', ([best], [length], True))
+    # else:
+        # emit('current_solution', ([best], [length]))
 
 
 if __name__ == '__main__':
