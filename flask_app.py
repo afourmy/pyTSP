@@ -76,10 +76,13 @@ def index():
         async_mode=socketio.async_mode
         )
 
+
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
-    session['best'], data = float('inf'), (*getattr(tsp, algorithm)(), False)
-    return jsonify(data)
+    print(algorithm)
+    session['best'] = float('inf')
+    return jsonify(*getattr(tsp, algorithm)(), False)
+
 
 @socketio.on('genetic_algorithm')
 def genetic_algorithm(data):
@@ -90,9 +93,6 @@ def genetic_algorithm(data):
         session['best'] = length
         emit('draw', ([best], [length], True))
 
-
-# for algorithm in tsp.algorithms:
-    # socket_emit(algorithm)
 
 if __name__ == '__main__':
     socketio.run(app)
