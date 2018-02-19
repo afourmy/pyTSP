@@ -83,6 +83,7 @@ def index():
                 city = City(**city_dict)
                 db.session.add(city)
             db.session.commit()
+            tsp.update_data()
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
     view = request.form['view'] if 'view' in request.form else '2D'

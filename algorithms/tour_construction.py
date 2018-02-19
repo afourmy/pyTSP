@@ -8,7 +8,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
     # or not yet visited (default)
     # returns the neighbor as well as the distance between the two
     def closest_neighbor(self, tour, node, in_tour=False, farthest=False):
-        neighbors = distances[node]
+        neighbors = self.distances[node]
         current_dist = [(c, d) for c, d in neighbors.items()
                         if (c in tour if in_tour else c not in tour)]
         return sorted(current_dist, key=itemgetter(1))[-farthest]
@@ -19,7 +19,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
     # used for the cheapest insertion algorithm
     def add_closest_to_tour(self, tour):
         best_dist, new_tour = float('inf'), None
-        for city in cities:
+        for city in self.cities:
             if city in tour:
                 continue
             for index in range(len(tour) - 1):
@@ -31,16 +31,16 @@ class TourConstructionHeuristics(BaseAlgorithm):
 
     def nearest_neighbor(self):
         best_tour, best_length, best_lengths = None, float('inf'), []
-        for city in cities:
+        for city in self.cities:
             current, tour, tour_length, tour_lengths = city, [city], 0, []
-            while len(tour) != len(cities):
+            while len(tour) != len(self.cities):
                 arg_min, edge_length = self.closest_neighbor(tour, current)
                 tour_length += edge_length
                 tour_lengths.append(tour_length)
                 tour.append(arg_min)
                 current = arg_min
             # we close the tour by adding the last edge length
-            tour_length += distances[current][city]
+            tour_length += self.distances[current][city]
             tour_lengths.append(tour_length)
             if tour_length < best_length:
                 best_length, best_lengths, best_tour = tour_length, tour_lengths, tour
@@ -51,7 +51,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
 
     def nearest_insertion(self, farthest=False):
         best_length, best_tours = float('inf'), []
-        for city in cities:
+        for city in self.cities:
             # we start the tour with one node I
             tour, tours, tour_lengths = [city], [], []
             # we find the closest node R to the first node
@@ -59,15 +59,15 @@ class TourConstructionHeuristics(BaseAlgorithm):
             tour.append(neighbor)
             tour_length = length
             tour_lengths.append(tour_length)
-            while len(tour) != len(cities):
+            while len(tour) != len(self.cities):
                 best, min_distance = None, 0 if farthest else float('inf')
                 # (selection step) given a sub-tour,we find node r not in the
                 # sub-tour closest to any node j in the sub-tour,
                 # i.e. with minimal c_rj
-                for candidate in cities:
+                for candidate in self.cities:
                     if candidate in tour:
                         continue
-                    # we consider only the distances to nodes already in the tour
+                    # we consider only the self.distances to nodes already in the tour
                     _, length = self.closest_neighbor(tour, candidate, True, farthest)
                     if (length > min_distance if farthest else length < min_distance):
                         best, min_distance = candidate, length
@@ -84,7 +84,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
                 tours.append(tour)
                 tour.insert(min_index + 1, best)
                 tour = tour[:-1]
-            tour_length += distances[tour[0]][tour[-1]]
+            tour_length += self.distances[tour[0]][tour[-1]]
             tour_lengths.append(tour_length)
             if tour_length < best_length:
                 best_length, best_tours = tour_length, tours
@@ -99,7 +99,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
         best_tour, best_length = None, float('inf')
         # store intermediate tours for visualization purposes
         best_tours, best_lengths = [], []
-        for city in cities:
+        for city in self.cities:
             # we start the tour with one node I
             tour, tours, tour_lengths = [city], [], []
             # we find the closest node R to the first node
@@ -107,12 +107,12 @@ class TourConstructionHeuristics(BaseAlgorithm):
             tour_length = length
             tour_lengths.append(length)
             tour.append(neighbor)
-            while len(tour) != len(cities):
+            while len(tour) != len(self.cities):
                 length, tour = self.add_closest_to_tour(tour)
                 tour_length += length
                 tours.append(tour)
                 tour_lengths.append(tour_length)
-            tour_length += distances[tour[-1]][tour[0]]
+            tour_length += self.distances[tour[-1]][tour[0]]
             tour_lengths.append(tour_length)
             if tour_length < best_length:
                 best_lengths, best_tour, best_tours = tour_lengths, tour, tours
