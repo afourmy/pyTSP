@@ -1,6 +1,7 @@
 from threading import Lock
 from flask import Flask, jsonify, render_template, request, session
 from flask_socketio import emit, SocketIO
+from forms import CreationForm
 from json import dumps, load
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
@@ -61,6 +62,7 @@ app, socketio, tsp = create_app()
 def index():
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
+    creation_form = CreationForm(request.form)
     view = request.form['view'] if 'view' in request.form else '2D'
     cities = {
         city.id: {
@@ -73,13 +75,13 @@ def index():
         'index.html',
         view=view,
         cities=cities,
+        creation_form=creation_form,
         async_mode=socketio.async_mode
         )
 
 
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
-    print(algorithm)
     session['best'] = float('inf')
     return jsonify(*getattr(tsp, algorithm)(), False)
 

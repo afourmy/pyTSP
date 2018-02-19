@@ -34,7 +34,7 @@
     .panel-transparent {
         background: none;
     }
-    
+
     .score {
         cursor: default;
       }
@@ -120,7 +120,15 @@
     </div>
   </div>
   
-  <div class="panel-group" style="z-index:500; position: absolute; top: 50px; right:20px;">
+  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
+  
+    <form id="form" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
+      <div>
+        <label class="btn btn-default btn-file" for="file">Import a graph
+          {{ creation_form.file(style="visibility:hidden; display:none") }}
+        </label>
+      </div>
+    </form>
 
     <div class="panel panel-primary panel-transparent">
       <div class="panel-heading">Deterministic algorithm</div>
@@ -173,6 +181,11 @@
     <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
   {% endif %}
   <script>
+  
+    document.getElementById("file").onchange = function() {
+        document.getElementById("form").submit();
+    };
+
     namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     var currentAlgorithm = undefined;

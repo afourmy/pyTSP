@@ -116,7 +116,6 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         # crossover step: parents par, new generation ng
         for par in zip(generation[::2], generation[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
-            # print(par, ng)
         # mutation step
         ng = [getattr(self, mutation)(i) for i in ng]
         print(data)
