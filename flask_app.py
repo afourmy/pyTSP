@@ -1,7 +1,7 @@
+from collections import OrderedDict
 from threading import Lock
 from flask import Flask, jsonify, render_template, request, session
 from flask_socketio import emit, SocketIO
-from forms import CreationForm
 from json import dumps, load
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
@@ -85,20 +85,18 @@ def index():
             db.session.commit()
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
-    creation_form = CreationForm(request.form)
     view = request.form['view'] if 'view' in request.form else '2D'
     cities = {
-        city.id: {
-            property: getattr(city, property)
+        city.id: OrderedDict([
+            (property, getattr(city, property))
             for property in City.properties
-            }
+            ])
         for city in City.query.all()
         }
     return render_template(
         'index.html',
         view=view,
         cities=cities,
-        creation_form=creation_form,
         async_mode=socketio.async_mode
         )
 
