@@ -61,6 +61,12 @@ def create_app(config='config'):
 app, socketio, tsp = create_app()
 
 
+def allowed_file(name, allowed_extensions):
+    allowed_syntax = '.' in name
+    allowed_extension = name.rsplit('.', 1)[1].lower() in allowed_extensions
+    return allowed_syntax and allowed_extension
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if 'file' in request.files:
@@ -69,13 +75,9 @@ def index():
             filename = secure_filename(filename)
             filepath = join(path_app, 'data', filename)
             request.files['file'].save(filepath)
-            book = open_workbook(filepath)
-            try:
-                sheet = book.sheet_by_index(0)
-            # if the sheet cannot be found, there's nothing to import
-            except XLRDError:
-                continue
+            sheet = open_workbook(filepath).sheet_by_index(0)
             properties = sheet.row_values(0)
+            db.session.query(City).delete()
             for row_index in range(1, sheet.nrows):
                 city_dict = dict(zip(properties, sheet.row_values(row_index)))
                 city = City(**city_dict)

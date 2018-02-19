@@ -17,7 +17,7 @@ class City(Base):
         self.name = data['city']
         self.longitude = data['longitude']
         self.latitude = data['latitude']
-        self.population = data['population']
+        self.population = data.get('population', 0)
 
     def __repr__(self):
         return self.name
