@@ -6,6 +6,9 @@ from json import dumps, load
 from os.path import abspath, dirname, join
 from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
+from werkzeug.utils import secure_filename
+from xlrd import open_workbook
+from xlrd.biffh import XLRDError
 
 dont_write_bytecode = True
 path_app = dirname(abspath(__file__))
@@ -60,6 +63,24 @@ app, socketio, tsp = create_app()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    if 'file' in request.files:
+        filename = request.files['file'].filename
+        if allowed_file(filename, {'xls', 'xlsx'}):
+            filename = secure_filename(filename)
+            filepath = join(path_app, 'data', filename)
+            request.files['file'].save(filepath)
+            book = open_workbook(filepath)
+            try:
+                sheet = book.sheet_by_index(0)
+            # if the sheet cannot be found, there's nothing to import
+            except XLRDError:
+                continue
+            properties = sheet.row_values(0)
+            for row_index in range(1, sheet.nrows):
+                city_dict = dict(zip(properties, sheet.row_values(row_index)))
+                city = City(**city_dict)
+                db.session.add(city)
+            db.session.commit()
     session['best'] = float('inf')
     session['crossover'], session['mutation'] = 'OC', 'Swap'
     creation_form = CreationForm(request.form)

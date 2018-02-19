@@ -4,4 +4,4 @@ from wtforms import FileField
 
 class CreationForm(FlaskForm):
     validators = [FileAllowed(['xls', 'xlsx'], 'Excel file only')]
-    file = FileField()
+    file = FileField('create_objects')
