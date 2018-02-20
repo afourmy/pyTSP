@@ -106,6 +106,8 @@ a valid tour. If this new tour is shorter, make the change.
 - Repeat for any edge until no further improvement can be made.
 ```
 
+![Edge insertion](readme/edge_insertion.gif)
+
 # Linear programming
 
 ![First constraints](readme/linear_programming.png)
