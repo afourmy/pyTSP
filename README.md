@@ -103,6 +103,8 @@ a valid tour. If this new tour is shorter, make the change.
 
 ![First constraints](readme/linear_programming.png)
 
+![Example of disjoint subtours](readme/subtours.png)
+
 # Genetic algorithm
 
 # Getting started
