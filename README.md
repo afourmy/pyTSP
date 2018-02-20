@@ -36,6 +36,8 @@ The following algorithms are implemented in pyTSP:
 - Repeat until every city has been visited.
 ```
 
+![Nearest neighbor](readme/nearest_neighbor.gif)
+
 ## Nearest insertion
 
 ```
