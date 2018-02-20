@@ -95,6 +95,8 @@ a valid tour. If this new tour is shorter, make the change.
 - Repeat for any node until no further improvement can be made.
 ```
 
+![Node insertion](readme/node_insertion.gif)
+
 ## Edge insertion
 
 ![Edge insertion](readme/edge_insertion.png)
