@@ -84,6 +84,8 @@ a valid tour. If this new tour is shorter, make the change.
 - Repeat for any pair of edges until no further improvement can be made.
 ```
 
+![Pairwise exchange](readme/pairwise_exchange.gif)
+
 ## Node insertion
 
 ![Node insertion](readme/node_insertion.png)
