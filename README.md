@@ -73,10 +73,9 @@ i.e the city k which maximizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 ![Pairwise exchange](readme/pairwise_exchange.png)
 
 ```
-- Consider every pair of edges.
-- Given a pair of edge, there is only one way of deleting and reconnecting it to obtain
+- Given a pair of edges, there is only one way of deleting and reconnecting the edges to obtain
 a valid tour. If this new tour is shorter, make the change.
-- Repeat until no further improvement can be made.
+- Repeat for any pair of edges until no further improvement can be made.
 ```
 
 ## Node insertion
@@ -84,9 +83,8 @@ a valid tour. If this new tour is shorter, make the change.
 ![Node insertion](readme/node_insertion.png)
 
 ```
-- Consider every node.
 - Given a node, remove it from the tour and insert it at the best possible position.
-- Repeat until no further improvement can be made.
+- Repeat for any node until no further improvement can be made.
 ```
 
 ## Edge insertion
@@ -94,9 +92,8 @@ a valid tour. If this new tour is shorter, make the change.
 ![Edge insertion](readme/edge_insertion.png)
 
 ```
-- Consider every edge.
 - Given an edge, remove it from the tour and insert it at the best possible position.
-- Repeat until no further improvement can be made.
+- Repeat for any edge until no further improvement can be made.
 ```
 
 # Linear programming
@@ -122,9 +119,8 @@ xlrd (graph import)
 
 In order to use pyTSP, you need to:
     
-- (optional) set up a virtual environment.
-[Python official doc on virtual environments](https://docs.python.org/3/library/venv.html) 
-    
+- (optional) set up a [virtual environment](https://docs.python.org/3/library/venv.html) .
+
 - clone pyTSP (or download as a zip archive from github)
 ```
 git clone https://github.com/afourmy/pyTSP.git
@@ -142,8 +138,6 @@ python flask_app.py
 ```
 
 - go the http://127.0.0.1:5000/.
-
-- create an account and log in.
 
 # Contact
 
