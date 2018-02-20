@@ -5,7 +5,7 @@ The travelling salesman problem (TSP) asks the following question: "Given a list
 pyTSP uses various approaches to solve the TSP (linear programming, construction heuristics, optimization heuristics, genetic algorithm).
 It provides a geographical step-by-step visualization of each of these algorithms.
 
-![eNMS](readme/pyTSP.gif)
+![pyTSP](readme/intro.gif)
 
 **You can find a demo of pyTSP on a small graph made of all U.S cities with a population larger than 800 000 inhabitants. _[here](http://google.com/)_ !**
 
