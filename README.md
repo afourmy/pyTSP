@@ -110,9 +110,12 @@ a valid tour. If this new tour is shorter, make the change.
 The following modules are used in pyTSP:
 ```
 flask
+flask_wtf
 flask_socketio (sockets)
 flask_sqlalchemy (database)
+numpy (linear programming)
 cvxopt (linear programming)
+xlrd (graph import)
 ```
 
 In order to use pyTSP, you need to:
