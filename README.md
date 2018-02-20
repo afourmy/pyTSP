@@ -48,6 +48,8 @@ with j a city already in the tour.
 - Repeat until every city has been visited.
 ```
 
+![Nearest insertion](readme/nearest_insertion.gif)
+
 ## Cheapest insertion
 
 ```
