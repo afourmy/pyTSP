@@ -60,6 +60,8 @@ i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 - Repeat until every city has been visited.
 ```
 
+![Cheapest insertion](readme/cheapest_insertion.gif)
+
 ## Farthest insertion
 
 ```
