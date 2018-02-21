@@ -103,7 +103,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         # we select 30 random elements and keep only the best 10
         if generation:
             generation = sorted(sample(generation, 30), key=self.compute_length)
-        generation = list(map(self.pairwise_exchange, generation[10:]))
+        # generation = list(map(self.pairwise_exchange, generation[10:]))
         while len(generation) < 70:
             generation.append(self.generate_solution())
         return generation

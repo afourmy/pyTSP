@@ -39,7 +39,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 500000:
+            if int(city_dict['population']) < 800000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -49,9 +49,9 @@ def import_cities():
             db.session.rollback()
 
 
-def create_app(config='config'):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object('config')
+    app.config['SECRET_KEY'] = 'secret!'
     configure_database(app)
     socketio = configure_socket(app)
     tsp = pyTSP()
