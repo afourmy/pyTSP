@@ -1,0 +1,37 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#map {
+    min-height: 100%; 
+}
+
+#earth {
+    min-height: 100%; 
+}
+
+.list-group-item {
+background-color: transparent;
+padding: 15px 15px;
+}
+
+#slider-css .slider-selection {
+background: #BABABA;
+}
+
+.panel-transparent {
+background: none;
+}
+
+.score {
+cursor: default;
+}
+
+.slider.slider-horizontal{
+width:10vw !important;
+}
+
+.well {
+background-color: rgba(245, 245, 245, 0.5);
+}
