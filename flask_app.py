@@ -51,7 +51,7 @@ def import_cities():
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret!'
+    app.config['SECRET_KEY'] = 'key'
     configure_database(app)
     socketio = configure_socket(app)
     tsp = pyTSP()

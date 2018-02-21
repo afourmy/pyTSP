@@ -117,7 +117,7 @@
       <div class="panel panel-primary panel-transparent">
         <div class="panel-heading">Visualization speed</div>
         <div class="panel-body">    
-            <input id="slider1" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
+            <input id="base_slider" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
         </div>
       </div>
     </div>
@@ -150,9 +150,9 @@
           <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
         </div><br><br>
         <ul class="list-group">
-          <li class="list-group-item"><input id="slider2" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
-          <li class="list-group-item"><input id="mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
-          <li class="list-group-item"><input id="crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
+          <li class="list-group-item"><input id="ga_slider" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
+          <li class="list-group-item"><input id="Mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
+          <li class="list-group-item"><input id="Crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
         </ul>
         <div class="dropdown">
           <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="crossover">Crossover method</span>
@@ -215,13 +215,13 @@
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {
-        var speed = $('#slider2').val();
+        var speed = $('#ga_slider').val();
         window.optimizationTimer = setTimeout(function () {
           generationNumber += 1;
           $('#generation').text('Genetic algorithm (' + generationNumber + ')');
           socket.emit('genetic_algorithm', {
-            mr: $('#mutation_rate').slider('getValue'),
-            cr: $('#crossover_rate').slider('getValue'),
+            mr: $('#Mutation_rate').slider('getValue'),
+            cr: $('#Crossover_rate').slider('getValue'),
             mutation: $('#mutation').text(),
             crossover: $('#crossover').text()
             });
@@ -251,32 +251,25 @@
       var type = $(this).parents(".dropdown").find('#type').val();
       $('#' + type).text($(this).text());
     });
- 
-    $('#slider1').slider({
-      formatter: function(value) {
-        return 'Speed';
+
+    var sliders = ['base', 'ga'];
+    for (i = 0; i < sliders.length; i++) {
+      $('#' + sliders[i] + '_slider').slider({
+        formatter: function(value) {
+          return 'Speed';
+          }
+        });
       }
-    });
-    
-    $('#slider2').slider({
-      formatter: function(value) {
-        return 'Speed';
-      }
-    });
-    
-    $('#crossover_rate').slider({
-      tooltip_position:'left',
-      formatter: function(value) {
-        return 'Crossover rate: ' + value;
-      }
-    });
-    
-    $('#mutation_rate').slider({
-      tooltip_position:'left',
-      formatter: function(value) {
-        return 'Mutation rate: ' + value;
-      }
-    });
+
+    var rates = ['Crossover', 'Mutation'];
+    for (i = 0; i < rates.length; i++) {
+    $('#' + rates[i] + '_rate').slider({
+        tooltip_position:'left',
+        formatter: function(value) {
+          return 'Mutation rate: ' + value;
+          }
+        });
+      };
     
     // creation of the socket listener
   
@@ -425,7 +418,7 @@
               lines.push(polygonSD, polygonDS)
             {% endif %}
             }
-          var speed = $('#slider1').val();
+          var speed = $('#base_slider').val();
           await sleep(50000/speed);
           }
         }
