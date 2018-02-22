@@ -39,7 +39,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 800000:
+            if int(city_dict['population']) < 850000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -117,6 +117,8 @@ def genetic_algorithm(data):
     if length < session['best']:
         session['best'] = length
         emit('draw', ([best], [length], True))
+    else:
+        emit('draw', ([best], [length], False))
 
 
 if __name__ == '__main__':

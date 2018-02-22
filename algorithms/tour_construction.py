@@ -60,29 +60,29 @@ class TourConstructionHeuristics(BaseAlgorithm):
             tour_length = length
             tour_lengths.append(tour_length)
             while len(tour) != len(self.cities):
-                best, min_distance = None, 0 if farthest else float('inf')
+                best, dist = None, 0 if farthest else float('inf')
                 # (selection step) given a sub-tour,we find node r not in the
                 # sub-tour closest to any node j in the sub-tour,
                 # i.e. with minimal c_rj
                 for candidate in self.cities:
                     if candidate in tour:
                         continue
-                    # we consider only the self.distances to nodes already in the tour
-                    _, length = self.closest_neighbor(tour, candidate, True, farthest)
-                    if (length > min_distance if farthest else length < min_distance):
-                        best, min_distance = candidate, length
+                    # we consider only the distances to nodes already in the tour
+                    _, length = self.closest_neighbor(tour, candidate, True)
+                    if (length > dist if farthest else length < dist):
+                        best, dist = candidate, length
                 # (insertion step) we find the arc (i, j) in the sub-tour which
                 # minimizes cir + crj - cij, and we insert r between i and j
-                min_index, min_distance = None, float('inf')
+                idx, dist = None, float('inf')
                 tour = tour + [tour[0]]
                 for i in range(len(tour) - 1):
-                    added_distance = self.add(tour[i], tour[i+1], best)
-                    if added_distance < min_distance:
-                        min_index, min_distance = i, added_distance
-                tour_length += self.add(tour[min_index], tour[min_index + 1], best)
+                    add = self.add(tour[i], tour[i+1], best)
+                    if add < dist:
+                        idx, dist = i, add
+                tour_length += self.add(tour[idx], tour[idx + 1], best)
                 tour_lengths.append(tour_length)
                 tours.append(tour)
-                tour.insert(min_index + 1, best)
+                tour.insert(idx + 1, best)
                 tour = tour[:-1]
             tour_length += self.distances[tour[0]][tour[-1]]
             tour_lengths.append(tour_length)
