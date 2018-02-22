@@ -118,6 +118,8 @@ a valid tour. If this new tour is shorter, make the change.
 
 # Genetic algorithm
 
+![Genetic algorithm](readme/genetic_algorithm.gif)
+
 # Getting started
 
 The following modules are used in pyTSP:
