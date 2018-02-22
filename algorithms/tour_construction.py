@@ -89,8 +89,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
             if tour_length < best_length:
                 best_length, best_tours = tour_length, tours
                 best_lengths = tour_lengths
-        print(best_lengths)
-        best_lengths = best_lengths[2:]
+        best_lengths = list(map(self.compute_length, best_tours))
         return [self.format_solution(step) for step in best_tours], best_lengths
 
     def farthest_insertion(self):
