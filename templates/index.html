@@ -225,11 +225,11 @@
       }
 
     var rates = ['Crossover', 'Mutation'];
-    for (i = 0; i < rates.length; i++) {
-    $('#' + rates[i] + '_rate').slider({
+    for (h = 0; h < rates.length; h++) {
+      $('#' + rates[h] + '_rate').slider({
         tooltip_position:'left',
         formatter: function(value) {
-          return 'Mutation rate: ' + value;
+          return rates[h] + ' rate: ' + value;
           }
         });
       };
