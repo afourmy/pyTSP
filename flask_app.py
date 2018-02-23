@@ -39,7 +39,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 1300000:
+            if int(city_dict['population']) < 1200000:
                 continue
             city = City(**city_dict)
             db.session.add(city)
@@ -54,8 +54,8 @@ def create_app():
     app.config['SECRET_KEY'] = 'key'
     configure_database(app)
     socketio = configure_socket(app)
-    tsp = pyTSP()
     import_cities()
+    tsp = pyTSP()
     return app, socketio, tsp
 
 
