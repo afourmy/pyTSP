@@ -117,6 +117,10 @@ a valid tour. If this new tour is shorter, make the change.
 
 ![Example of disjoint subtours](readme/subtours.png)
 
+![Subtour constraint](readme/linear_programming_subtour_constraint.png)
+
+![Final solution](readme/lp_solution.png)
+
 # Genetic algorithm
 
 ![Genetic algorithm](readme/genetic_algorithm.gif)
