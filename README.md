@@ -66,8 +66,9 @@ i.e the city <b>k</b> which minimizes <b>d(i, k)  + d(k, j) - d(i, j)</b> with <
 <pre>
 - Start from a random city.
 - Find the city <b>k</b> farthest from any node in the tour (i.e the city <b>k</b> which maximizes 
-<b>d(c, k)</b> with <b>c</b> a city in the partial tour), and insert <b>k</b> where it causes the smallest increase in length (by minimizing <b>d(i, k)  + d(k, j) - d(i, j)</b>, with <b>(i, j)</b> an edge 
-in the partial tour).  
+<b>d(c, k)</b> with <b>c</b> a city in the partial tour), and insert <b>k</b> where it causes the 
+smallest increase in length (by minimizing <b>d(i, k)  + d(k, j) - d(i, j)</b>, with <b>(i, j)</b> 
+an edge in the partial tour).  
 - Repeat until every city has been visited.
 </pre>
 
@@ -123,7 +124,15 @@ a valid tour. If this new tour is shorter, make the change.
 
 # Genetic algorithm
 
+pyTSP implements a genetic algorithm with the following properties:
+- 3 mutation methods: random swap, insertion or displacement.
+- 3 crossover methods: order, maximally preservation, or partially mapped.
+- Selection: at each generation, 30 individuals are chosen randomly, and the 10 best are kept for the next generation.
+- Mutation and crossover rates default to 50%. They can be modified with sliders.
+
 ![Genetic algorithm](readme/genetic_algorithm.gif)
+
+**Note**: the genetic algorithm is processed by the server, and websockets (or long-polling if the server does not support websockets) are used to update the display client-side every new generation.
 
 # Getting started
 
