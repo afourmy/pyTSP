@@ -67,7 +67,8 @@ i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 ```
 - Start from a random city.
 - Find the city which insertion in the tour causes the largest increase in length,  
-i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with k a city as far as possible from any node in the tour, and (i, j) an edge in the (partial) tour.
+i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with k a city chosen 
+as far as possible from any node in the tour, and (i, j) an edge in the (partial) tour.
 - Insert k between i and j.
 - Repeat until every city has been visited.
 ```
