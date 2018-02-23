@@ -157,7 +157,7 @@
     var currentAlgorithm = undefined;
 
     function tourConstruction(algorithm){
-        clearLines(polylines);
+        clearLines();
         if (window.optimizationTimer) {
           clearTimeout(window.optimizationTimer);
           window.optimizationTimer = 0;
@@ -174,7 +174,7 @@
 
     var generationNumber = 0;
     function geneticAlgorithm() {
-      clearLines(polylines);
+      clearLines();
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {
@@ -202,8 +202,6 @@
       
     // lines of the path displayed
     var polylines = [];
-    // lines of the best path ever found (for genetic algorithm)
-    var bestPolylines = [];
     
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -315,15 +313,15 @@
       {% endif %}
       }
       
-    // Function that clears an array made of lines
+    // Function that clears all lines
     
-    function clearLines(lines){
-      for (i = 0; i < lines.length; i++) {
+    function clearLines(){
+      for (i = 0; i < polylines.length; i++) {
         {% if view == '2D' %}
-          map.removeLayer(lines[i]);
+          map.removeLayer(polylines[i]);
         {% else %}
           try {
-            lines[i].destroy();
+            polylines[i].destroy();
             }
           catch(err) {};
         {% endif %}
@@ -341,14 +339,14 @@
             $("#score").text(Math.round(Number(lengths[j])));
             }
           var color = '#0000ff';
-          clearLines(polylines);
+          clearLines();
           for (i = 0; i < paths[j].length - 1; i++) { 
-      
+
             var source_lat = paths[j][i][0];
                 source_lon = paths[j][i][1];
                 destination_lat = paths[j][i+1][0];
                 destination_lon = paths[j][i+1][1];
-                
+
             {% if view == '2D' %}
               var pointA = new L.LatLng(source_lat, source_lon);
               var pointB = new L.LatLng(destination_lat, destination_lon);
@@ -363,15 +361,15 @@
         
               polyline.addTo(map);
               polylines.push(polyline);
-            {% else %}
-              var polygonSD = WE.polygon(
-                [[source_lat, source_lon], [destination_lat, destination_lon],
-                [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
-              var polygonDS = WE.polygon(
-                [[destination_lat, destination_lon], [source_lat, source_lon],
-                [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
-              polylines.push(polygonSD, polygonDS)
-            {% endif %}
+              {% else %}
+                var polygonSD = WE.polygon(
+                  [[source_lat, source_lon], [destination_lat, destination_lon],
+                  [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
+                var polygonDS = WE.polygon(
+                  [[destination_lat, destination_lon], [source_lat, source_lon],
+                  [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
+                polylines.push(polygonSD, polygonDS)
+              {% endif %}
             }
           var speed = $('#base_slider').val();
           await sleep(50000/speed);
