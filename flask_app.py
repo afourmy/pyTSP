@@ -39,7 +39,7 @@ def configure_socket(app):
 def import_cities():
     with open(join(path_app, 'data', 'cities.json')) as data:
         for city_dict in load(data):
-            if int(city_dict['population']) < 600000:
+            if int(city_dict['population']) < 1400000:
                 continue
             city = City(**city_dict)
             db.session.add(city)

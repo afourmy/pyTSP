@@ -28,7 +28,7 @@ class LinearProgramming(BaseAlgorithm):
         G, h, A, b = [], [], [], full(n, 2, dtype=float)
         for st in chain.from_iterable(combinations(range(n), r) for r in range(2, n)):
             G += [[float(i in st and j in st) for i in range(n) for j in range(i + 1, n)]]
-            h.append(float(len(st) - 1))
+            h.append(-float(1 - len(st)))
         for k in range(n):
             A.append([float(k in (i, j)) for i in range(n) for j in range(i + 1, n)])
         A, G, b, c, h = map(matrix, (A, G, b, c, h))
