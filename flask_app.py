@@ -106,7 +106,7 @@ def index():
 @app.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
     session['best'] = float('inf')
-    return jsonify(*getattr(tsp, algorithm)(), False)
+    return jsonify(*getattr(tsp, algorithm)())
 
 
 @socketio.on('genetic_algorithm')
@@ -116,10 +116,7 @@ def genetic_algorithm(data):
     session['generation'], best, length = tsp.cycle(session['generation'], **data)
     if length < session['best']:
         session['best'] = length
-        emit('draw', ([best], [length], True))
-    else:
-        emit('draw', ([best], [length], False))
-
+        emit('draw', ([best], [length]))
 
 if __name__ == '__main__':
     socketio.run(app)

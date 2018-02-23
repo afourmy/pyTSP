@@ -121,6 +121,8 @@ a valid tour. If this new tour is shorter, make the change.
 
 ![Final solution](readme/lp_solution.png)
 
+**Note**: there is an exponentially growing number of subtour constraints, which makes this algorithm inefficient for larger instances of the TSP. One way to improve it is to use lazy constraints, i.e ignore the subtour constraints and eliminate them one by one when looking for a feasible solution.
+
 # Genetic algorithm
 
 ![Genetic algorithm](readme/genetic_algorithm.gif)

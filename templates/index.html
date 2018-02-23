@@ -157,7 +157,7 @@
     var currentAlgorithm = undefined;
 
     function tourConstruction(algorithm){
-        clearAll();
+        clearLines(polylines);
         if (window.optimizationTimer) {
           clearTimeout(window.optimizationTimer);
           window.optimizationTimer = 0;
@@ -174,7 +174,7 @@
 
     var generationNumber = 0;
     function geneticAlgorithm() {
-      clearAll();
+      clearLines(polylines);
       // we cannot use setInterval as the timer depends on the slider
       // we have to use setTimeout for the speed to vary through time
       function timeout() {
@@ -329,27 +329,19 @@
         {% endif %}
         }
       }
-      
-    // Function that clears all lines
-    function clearAll(){
-      clearLines(polylines);
-      clearLines(bestPolylines);
-      }
     
     /* Function to draw a serie of paths, with optional arguments: 
     - lengths for updating the length in real-time, if createPath is not
     called from another function like createIntermediatePath */
 
-      async function draw(paths, lengths, best){
+      async function draw(paths, lengths){
         for (j = 0; j < paths.length; j++) {
           // update the score
           if (lengths) {
             $("#score").text(Math.round(Number(lengths[j])));
             }
-          var color = best ? '#d4222a' : '#0000ff';
-          var lines = best ? bestPolylines : polylines;
-          clearLines(lines);
-    
+          var color = '#0000ff';
+          clearLines(polylines);
           for (i = 0; i < paths[j].length - 1; i++) { 
       
             var source_lat = paths[j][i][0];
@@ -370,7 +362,7 @@
                 });
         
               polyline.addTo(map);
-              lines.push(polyline);
+              polylines.push(polyline);
             {% else %}
               var polygonSD = WE.polygon(
                 [[source_lat, source_lon], [destination_lat, destination_lon],
@@ -378,7 +370,7 @@
               var polygonDS = WE.polygon(
                 [[destination_lat, destination_lon], [source_lat, source_lon],
                 [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
-              lines.push(polygonSD, polygonDS)
+              polylines.push(polygonSD, polygonDS)
             {% endif %}
             }
           var speed = $('#base_slider').val();
