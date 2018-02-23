@@ -39,36 +39,36 @@ The following algorithms are implemented in pyTSP:
 
 ## Nearest insertion
 
-```
+<pre>
 - Start from a random city.
-- Find the city closest to the partial tour, i.e the city **i** which minimizes **d(i, j)**
-with **j** a city already in the tour.
-- Insert **i** before or after **j**, depending on which option is shorter.
+- Find the city closest to the partial tour, i.e the city <b>i</b> which minimizes <b>d(i, j)</b>
+with <b>j</b> a city already in the tour.
+- Insert <b>i</b> before or after <b>j</b>, depending on which option is shorter.
 - Repeat until every city has been visited.
-```
+<pre>
 
 ![Nearest insertion](readme/nearest_insertion.gif)
 
 ## Cheapest insertion
 
-```
+<pre>
 - Start from a random city.
 - Find the city which insertion in the tour causes the smallest increase in length,  
-i.e the city **k** which minimizes **d(i, k)  + d(k, j) - d(i, j)** with **(i, j)** an edge in the partial tour.
-- Insert **k** between **i** and **j**.
+i.e the city <b>k</b> which minimizes <b>d(i, k)  + d(k, j) - d(i, j)</b> with <b>(i, j)</b> an edge in the partial tour.
+- Insert <b>k</b> between <b>i</b> and <b>j</b>.
 - Repeat until every city has been visited.
-```
+<pre>
 
 ![Cheapest insertion](readme/cheapest_insertion.gif)
 
 ## Farthest insertion
 
-```
+<pre>
 - Start from a random city.
-- Find the city **k** farthest from any node in the tour (i.e the city **k** which maximizes **d(c, k)** with **c** a city in the partial tour), and insert **k** where it causes the smallest increase 
-in length (by minimizing **d(i, k)  + d(k, j) - d(i, j)**, with **(i, j)** an edge in the partial tour).  
+- Find the city <b>k</b> farthest from any node in the tour (i.e the city <b>k</b> which maximizes <b>d(c, k)</b> with <b>c</b> a city in the partial tour), and insert <b>k</b> where it causes the smallest increase 
+in length (by minimizing <b>d(i, k)  + d(k, j) - d(i, j)</b>, with <b>(i, j)</b> an edge in the partial tour).  
 - Repeat until every city has been visited.
-```
+<pre>
 
 ![Farthest insertion](readme/farthest_insertion.gif)
 
