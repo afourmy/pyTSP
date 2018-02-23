@@ -29,7 +29,6 @@ The following algorithms are implemented in pyTSP:
 
 ## Nearest neighbor
 
-
 ```
 - Start from a random city.
 - Travel to the nearest unvisited city.
@@ -42,9 +41,9 @@ The following algorithms are implemented in pyTSP:
 
 ```
 - Start from a random city.
-- Find the city closest to the (partial) tour, i.e the city i which minimizes d(i, j) 
-with j a city already in the tour.
-- Insert i before or after j, depending on which option is shorter.
+- Find the city closest to the partial tour, i.e the city **i** which minimizes **d(i, j)**
+with **j** a city already in the tour.
+- Insert **i** before or after **j**, depending on which option is shorter.
 - Repeat until every city has been visited.
 ```
 
@@ -55,8 +54,8 @@ with j a city already in the tour.
 ```
 - Start from a random city.
 - Find the city which insertion in the tour causes the smallest increase in length,  
-i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge in the (partial) tour.
-- Insert k between i and j.
+i.e the city **k** which minimizes **d(i, k)  + d(k, j) - d(i, j)** with **(i, j)** an edge in the partial tour.
+- Insert **k** between **i** and **j**.
 - Repeat until every city has been visited.
 ```
 
@@ -66,10 +65,8 @@ i.e the city k which minimizes d(i, k)  + d(k, j) - d(i, j) with (i, j) an edge 
 
 ```
 - Start from a random city.
-- Find the city k located as far as possible from any node in the tour (i.e the
-city k which maximizes d(c, k) with c any city of the (partial) tour), and insert k
-where it causes the smallest increase in length (by minimizing d(i, k)  + d(k, j) - d(i, j),
-with (i, j) an edge in the (partial) tour).  
+- Find the city **k** farthest from any node in the tour (i.e the city **k** which maximizes **d(c, k)** with **c** a city in the partial tour), and insert **k** where it causes the smallest increase 
+in length (by minimizing **d(i, k)  + d(k, j) - d(i, j)**, with **(i, j)** an edge in the partial tour).  
 - Repeat until every city has been visited.
 ```
 
