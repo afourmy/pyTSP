@@ -45,7 +45,7 @@ The following algorithms are implemented in pyTSP:
 with <b>j</b> a city already in the tour.
 - Insert <b>i</b> before or after <b>j</b>, depending on which option is shorter.
 - Repeat until every city has been visited.
-<pre>
+</pre>
 
 ![Nearest insertion](readme/nearest_insertion.gif)
 
@@ -57,7 +57,7 @@ with <b>j</b> a city already in the tour.
 i.e the city <b>k</b> which minimizes <b>d(i, k)  + d(k, j) - d(i, j)</b> with <b>(i, j)</b> an edge in the partial tour.
 - Insert <b>k</b> between <b>i</b> and <b>j</b>.
 - Repeat until every city has been visited.
-<pre>
+</pre>
 
 ![Cheapest insertion](readme/cheapest_insertion.gif)
 
@@ -68,7 +68,7 @@ i.e the city <b>k</b> which minimizes <b>d(i, k)  + d(k, j) - d(i, j)</b> with <
 - Find the city <b>k</b> farthest from any node in the tour (i.e the city <b>k</b> which maximizes <b>d(c, k)</b> with <b>c</b> a city in the partial tour), and insert <b>k</b> where it causes the smallest increase 
 in length (by minimizing <b>d(i, k)  + d(k, j) - d(i, j)</b>, with <b>(i, j)</b> an edge in the partial tour).  
 - Repeat until every city has been visited.
-<pre>
+</pre>
 
 ![Farthest insertion](readme/farthest_insertion.gif)
 
