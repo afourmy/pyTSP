@@ -65,8 +65,8 @@ i.e the city <b>k</b> which minimizes <b>d(i, k)  + d(k, j) - d(i, j)</b> with <
 
 <pre>
 - Start from a random city.
-- Find the city <b>k</b> farthest from any node in the tour (i.e the city <b>k</b> which maximizes <b>d(c, k)</b> with <b>c</b> a
-city in the partial tour), and insert <b>k</b> where it causes the smallest increase in length 
+- Find the city <b>k</b> farthest from any node in the tour (i.e the city <b>k</b> which maximizes <b>d(c, k)</b> with <b>c</b>
+a city in the partial tour), and insert <b>k</b> where it causes the smallest increase in length 
 (by minimizing <b>d(i, k)  + d(k, j) - d(i, j)</b>, with <b>(i, j)</b> an edge in the partial tour).  
 - Repeat until every city has been visited.
 </pre>

@@ -10,7 +10,6 @@ class TourConstructionHeuristics(BaseAlgorithm):
     # returns the neighbor as well as the distance between the two
     def closest_neighbor(self, tour, node, in_tour=False, farthest=False):
         neighbors = self.distances[node]
-        print(tour, node, neighbors)
         current_dist = [(c, d) for c, d in neighbors.items()
                         if (c in tour if in_tour else c not in tour)]
         return sorted(current_dist, key=itemgetter(1))[-farthest]
@@ -35,9 +34,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
         city = randrange(1, self.size)
         current, tour, tour_length, tour_lengths = city, [city], 0, []
         while len(tour) != len(self.cities):
-            print(tour)
             arg_min, edge_length = self.closest_neighbor(tour, current)
-            print(arg_min, edge_length)
             tour_length += edge_length
             tour_lengths.append(tour_length)
             tour.append(arg_min)
@@ -52,12 +49,11 @@ class TourConstructionHeuristics(BaseAlgorithm):
 
     def nearest_insertion(self, farthest=False):
         city = randrange(1, self.size)
-        tour, tours, tour_lengths = [city], [], []
+        tour, tours = [city], []
         # we find the closest node R to the first node
         neighbor, length = self.closest_neighbor(tour, city, False, farthest)
         tour.append(neighbor)
         tour_length = length
-        tour_lengths.append(tour_length)
         while len(tour) != len(self.cities):
             best, dist = None, 0 if farthest else float('inf')
             # (selection step) given a sub-tour,we find node r not in the
@@ -79,14 +75,12 @@ class TourConstructionHeuristics(BaseAlgorithm):
                 if add < dist:
                     idx, dist = i, add
             tour_length += self.add(tour[idx], tour[idx + 1], best)
-            tour_lengths.append(tour_length)
             tours.append(tour)
             tour.insert(idx + 1, best)
             tour = tour[:-1]
         tour_length += self.distances[tour[0]][tour[-1]]
-        tour_lengths.append(tour_length)
         best_lengths = list(map(self.compute_length, tours))
-        return [self.format_solution(step) for step in tours], tour_lengths
+        return [self.format_solution(step) for step in tours], best_lengths
 
     def farthest_insertion(self):
         return self.nearest_insertion(farthest=True)
