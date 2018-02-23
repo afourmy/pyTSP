@@ -18,11 +18,11 @@ The following algorithms are implemented in pyTSP:
   - Nearest insertion
   - Farthest insertion
   - Cheapest insertion
+- Linear programming
 - Optimization heuristics
   - Pairwise exchange (2-opt)
   - Node insertion
   - Edge insertion
-- Linear programming
 - Genetic algorithm
 
 # Construction heuristics
@@ -75,6 +75,18 @@ with (i, j) an edge in the (partial) tour).
 
 ![Farthest insertion](readme/farthest_insertion.gif)
 
+# Linear programming
+
+![First constraints](readme/linear_programming.png)
+
+![Example of disjoint subtours](readme/subtours.png)
+
+![Subtour constraint](readme/linear_programming_subtour_constraint.png)
+
+![Final solution](readme/lp_solution.png)
+
+**Note**: there is an exponentially growing number of subtour constraints, which makes this algorithm inefficient for larger instances of the TSP. One way to improve it is to use lazy constraints, i.e ignore the subtour constraints and eliminate them one by one when looking for a feasible solution.
+
 # Optimization heuristics
 
 ## Pairwise exchange (2-opt)
@@ -110,18 +122,6 @@ a valid tour. If this new tour is shorter, make the change.
 ```
 
 ![Edge insertion](readme/edge_insertion.gif)
-
-# Linear programming
-
-![First constraints](readme/linear_programming.png)
-
-![Example of disjoint subtours](readme/subtours.png)
-
-![Subtour constraint](readme/linear_programming_subtour_constraint.png)
-
-![Final solution](readme/lp_solution.png)
-
-**Note**: there is an exponentially growing number of subtour constraints, which makes this algorithm inefficient for larger instances of the TSP. One way to improve it is to use lazy constraints, i.e ignore the subtour constraints and eliminate them one by one when looking for a feasible solution.
 
 # Genetic algorithm
 
