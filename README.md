@@ -7,7 +7,7 @@ It provides a geographical step-by-step visualization of each of these algorithm
 
 ![pyTSP](readme/intro.gif)
 
-**You can find a _[demo of pyTSP here !](http://mintoo.pythonanywhere.com/)_ (U.S cities with a population larger than 900 000 inhabitants)**
+**You can find a <a href="http://mintoo.pythonanywhere.com/" target="_blank">demo of pyTSP here !</a> (U.S cities with a population larger than 900 000 inhabitants)**
 
 # Algorithms
 
