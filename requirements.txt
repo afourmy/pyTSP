@@ -1,7 +1,6 @@
 flask
 flask_socketio
 flask_sqlalchemy
-flask_wtf
 numpy
 cvxopt
 xlrd
