@@ -118,5 +118,6 @@ def genetic_algorithm(data):
         session['best'] = length
         emit('draw', ([best], [length]))
 
+
 if __name__ == '__main__':
     socketio.run(app)

@@ -25,7 +25,7 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
                         tours.append(solution)
                         lengths.append(best)
                         stable = False
-        if ga_solution:  
+        if ga_solution:
             return tours[-1]
         return [self.format_solution(step) for step in tours], lengths
 

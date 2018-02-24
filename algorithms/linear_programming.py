@@ -1,7 +1,11 @@
 from .base_algorithm import *
-from cvxopt import matrix, glpk, solvers
 from itertools import chain, combinations
-from numpy import concatenate, eye, float, full, ones, vstack, zeros
+try:
+    from cvxopt import matrix, glpk, solvers
+    from numpy import concatenate, eye, float, full, ones, vstack, zeros
+except ImportError:
+    import warnings
+    warnings.warn('cvxopt/numpy import failed: linear programming will not work')
 
 
 class LinearProgramming(BaseAlgorithm):
