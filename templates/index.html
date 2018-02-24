@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html>
-<head>
+  <head>
   <title>TSP 2D/3D GIS visualization</title>
   <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}" rel="stylesheet">
@@ -19,337 +19,337 @@
   <!-- Socket IO -->
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
   {% if view == '2D' %}
-    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+      <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
   {% else %}
-    <script src="{{ url_for('static', filename='webgl-earth/api.js') }}"></script>
+      <script src="{{ url_for('static', filename='webgl-earth/api.js') }}"></script>
   {% endif %}
-</head>
-<body>  
-  <form id="aform" method="post">
-    <div class="btn-group" style="z-index:500; position: absolute; left:40vw; top:10px;">  
-      {% if view == '2D' %}
-        <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
-      {% else %}
-        <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
-      {% endif %}
-
-      <div class="btn-group">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
-          <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
-          <li><a onclick="switch_layer('nasa')"> NASA </a></li>
-        </ul>
-      </div> 
-
-      <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
-    </div>
-  </form>
-  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
-    <iframe src="https://ghbtns.com/github-btn.html?user=afourmy&repo=pytsp&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Construction heuristics</div>
-        <div class="panel-body">
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('farthest_insertion')">Farthest insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Optimization heuristics</div>
-        <div class="panel-body">  
-          <div class="btn-group-vertical btn-block" >
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
-            <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-primary panel-transparent">
-        <div class="panel-heading">Visualization speed</div>
-        <div class="panel-body">    
-            <input id="base_slider" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
-    <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
-      <div style="padding-bottom:5px;">
-        <label class="btn btn-default btn-file" style="width:100%;">Import a graph
-          <input id="file" name="file" style="visibility:hidden; display:none" type="file">
-        </label>
+  </head>
+  <body>  
+    <form id="aform" method="post">
+      <div class="btn-group" style="z-index:500; position: absolute; left:40vw; top:10px;">  
+        {% if view == '2D' %}
+          <button type="submit" class="btn btn-primary" name="view" value="3D">3D view</button>
+        {% else %}
+          <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
+        {% endif %}
+  
+        <div class="btn-group">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a onclick="switch_layer('osm')"> Open Street Map </a></li>
+            <li><a onclick="switch_layer('gm')"> Google Maps </a></li>
+            <li><a onclick="switch_layer('nasa')"> NASA </a></li>
+          </ul>
+        </div> 
+  
+        <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
       </div>
     </form>
-
-    <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading">Deterministic algorithm</div>
-      <div class="panel-body">
-        <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-primary" onclick="tourConstruction('ILP_solver')">Linear programming</button>
+    <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
+      <iframe src="https://ghbtns.com/github-btn.html?user=afourmy&repo=pytsp&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+        <div class="panel panel-primary panel-transparent">
+          <div class="panel-heading">Construction heuristics</div>
+          <div class="panel-body">
+            <div class="btn-group-vertical btn-block" >
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_neighbor')">Nearest neighbor</button>
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('nearest_insertion')">Nearest insertion</button>
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('farthest_insertion')">Farthest insertion</button>
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('cheapest_insertion')">Cheapest insertion</button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="panel panel-primary panel-transparent">
+          <div class="panel-heading">Optimization heuristics</div>
+          <div class="panel-body">  
+            <div class="btn-group-vertical btn-block" >
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('pairwise_exchange')">Pairwise exchange</button>
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('node_insertion')">Node insertion</button>
+              <button type="button" class="btn btn-primary" onclick="tourConstruction('edge_insertion')">Edge insertion</button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="panel panel-primary panel-transparent">
+          <div class="panel-heading">Visualization speed</div>
+          <div class="panel-body">    
+              <input id="base_slider" data-slider-id='slider-css' type="text" data-slider-min="1" data-slider-max="1000" data-slider-step="10" data-slider-value="100"/>
+          </div>
         </div>
       </div>
     </div>
-
-    <div class="panel panel-primary panel-transparent">
-      <div class="panel-heading"><p id="generation">Genetic algorithm</p></strong>
-      </div>
-      <div class="panel-body">
-        <div class="btn-group-vertical btn-block" >
-          <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
-        </div><br><br>
-        <ul class="list-group">
-          <li class="list-group-item"><input id="ga_slider" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
-          <li class="list-group-item"><input id="Mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
-          <li class="list-group-item"><input id="Crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
-        </ul>
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="crossover">Crossover method</span>
-          <span class="caret"></span></button>
-          <input type='hidden' id="type" value='crossover'>
-          <ul class="dropdown-menu">
-            <li><a href="#">OC</a></li>
-            <li><a href="#">MPC</a></li>
-            <li><a href="#">PMC</a></li>
-          </ul>
+  
+    <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
+      <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
+        <div style="padding-bottom:5px;">
+          <label class="btn btn-default btn-file" style="width:100%;">Import a graph
+            <input id="file" name="file" style="visibility:hidden; display:none" type="file">
+          </label>
         </div>
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="mutation">Mutation method</span>
-          <span class="caret"></span></button>
-          <input type='hidden' id="type" value='mutation'>
-          <ul class="dropdown-menu">
-            <li><a href="#">Swap</a></li>
-            <li><a href="#">Insertion</a></li>
-            <li><a href="#">Displacement</a></li>
+      </form>
+  
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading">Deterministic algorithm</div>
+        <div class="panel-body">
+          <div class="btn-group-vertical btn-block" >
+            <button type="button" class="btn btn-primary" onclick="tourConstruction('ILP_solver')">Linear programming</button>
+          </div>
+        </div>
+      </div>
+  
+      <div class="panel panel-primary panel-transparent">
+        <div class="panel-heading"><p id="generation">Genetic algorithm</p></strong>
+        </div>
+        <div class="panel-body">
+          <div class="btn-group-vertical btn-block" >
+            <button type="button" class="btn btn-primary" onclick="geneticAlgorithm('genetic_algorithm')">Start</button>
+          </div><br><br>
+          <ul class="list-group">
+            <li class="list-group-item"><input id="ga_slider" data-slider-id='slider-css' type="text" data-slider-min="10" data-slider-max="500" data-slider-step="10" data-slider-value="50"/></li>
+            <li class="list-group-item"><input id="Mutation_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
+            <li class="list-group-item"><input id="Crossover_rate" data-slider-id='slider-css' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0.5"/></li> 
           </ul>
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="crossover">Crossover method</span>
+            <span class="caret"></span></button>
+            <input type='hidden' id="type" value='crossover'>
+            <ul class="dropdown-menu">
+              <li><a href="#">OC</a></li>
+              <li><a href="#">MPC</a></li>
+              <li><a href="#">PMC</a></li>
+            </ul>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="width:100%;"><span id="mutation">Mutation method</span>
+            <span class="caret"></span></button>
+            <input type='hidden' id="type" value='mutation'>
+            <ul class="dropdown-menu">
+              <li><a href="#">Swap</a></li>
+              <li><a href="#">Insertion</a></li>
+              <li><a href="#">Displacement</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  {% if view == '2D' %}
-    <div id="map">
-  {% else %}
-    <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
-  {% endif %}
-  <script>
-    document.getElementById("file").onchange = function() {
-      $("#fileform").submit();
-    };
-    namespace = '/';
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-
-    function tourConstruction(algorithm){
-        clearLines();
-        if (window.optimizationTimer) {
-          clearTimeout(window.optimizationTimer);
-          window.optimizationTimer = 0;
-          }
-        $.ajax({
-            type: "POST",
-            url: "/" + algorithm,
-            dataType: "json",
-            success: function(data){
-                draw(...data);
-            }
-        });
-      }
-
-    var generationNumber = 0;
-    function geneticAlgorithm() {
-      clearLines();
-      // we cannot use setInterval as the timer depends on the slider
-      // we have to use setTimeout for the speed to vary through time
-      function timeout() {
-        var speed = $('#ga_slider').val();
-        window.optimizationTimer = setTimeout(function () {
-          generationNumber += 1;
-          $('#generation').text('Genetic algorithm (' + generationNumber + ')');
-          socket.emit('genetic_algorithm', {
-            mr: $('#Mutation_rate').slider('getValue'),
-            cr: $('#Crossover_rate').slider('getValue'),
-            mutation: $('#mutation').text(),
-            crossover: $('#crossover').text()
-            });
-          timeout();
-          }, 50000/speed);
-        };
-      timeout();
-      }
-
-    var layers = {
-      'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
-      'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
-      };
-
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // change drop-down value for crossover / mutation methods upon selection
-    $(".dropdown-menu li a").click(function(){
-      var type = $(this).parents(".dropdown").find('#type').val();
-      $('#' + type).text($(this).text());
-    });
-
-    var sliders = ['base', 'ga'];
-    for (i = 0; i < sliders.length; i++) {
-      $('#' + sliders[i] + '_slider').slider({
-        formatter: function(value) { return 'Speed'; }
-        });
-      }
-
-    $('#Crossover_rate').slider({
-      tooltip_position: 'left',
-      formatter: function(value) { return 'Crossover rate: ' + value; }
-      });
-
-    $('#Mutation_rate').slider({
-      tooltip_position: 'left',
-      formatter: function(value) { return 'Mutation rate: ' + value; }
-      });
-
-    socket.on('draw', function(paths, lengths, best) {
-      draw(paths, lengths, best);
-      });
-
-    /* The following part is made of the code that depends on the dimension
-    - Initialization of the map (resp. globe) and drawing of the icons
-    - Initialiation of the tile layer */
-
-    // 2D code
     {% if view == '2D' %}
-      var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
-      var osm_layer = L.tileLayer(layers['osm']);
-      map.addLayer(osm_layer);
-      var current_layer = osm_layer;
-
-      var icon_city = L.icon({
-        iconUrl: 'static/images/city.png',
-        iconSize: [20, 20], // size of the icon
-        iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
-        popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
-        });
-
-      {% for id, properties in cities.items() %}  
-        var marker = L.marker([
-          {{ properties['latitude'] }}, 
-          {{ properties['longitude'] }}], 
-          );
-        
-        marker.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-        
-        marker.bindTooltip("{{ properties['name'] }}", {
-          permanent: false, 
-          }
-        );
-        marker.setIcon(icon_city), 
-        marker.addTo(map);
-      {% endfor %}
+      <div id="map">
     {% else %}
-      var options = {sky:true, atmosphere: true};
-      var earth = new WE.map('earth', options);
-
-      var current_layer = WE.tileLayer(layers['gm']);
-      current_layer.addTo(earth);
-
-      {% for id, properties in cities.items() %}  
-        var marker = WE.marker(
-        [
-        {{ properties['latitude'] }}, 
-        {{ properties['longitude'] }}
-        ],
-        'static/images/city.png', 
-        20, 20
-        ).addTo(earth);
-
-        marker.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
-        {% endfor %}<br>");
-      {% endfor %}
+      <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
     {% endif %}
-
-    function switch_layer(layer){
-      {% if view == '2D' %}
-        map.removeLayer(current_layer);
-        current_layer = L.tileLayer(layers[layer]);
-        map.addLayer(current_layer);
-      {% else %}
-        current_layer.removeFrom(earth);
-        current_layer = WE.tileLayer(layers[layer]);
-        current_layer.addTo(earth);
-      {% endif %}
+    <script>
+      document.getElementById("file").onchange = function() {
+        $("#fileform").submit();
+      };
+      namespace = '/';
+      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+      
+      function tourConstruction(algorithm){
+          clearLines();
+          if (window.optimizationTimer) {
+            clearTimeout(window.optimizationTimer);
+            window.optimizationTimer = 0;
+            }
+          $.ajax({
+              type: "POST",
+              url: "/" + algorithm,
+              dataType: "json",
+              success: function(data){
+                  draw(...data);
+              }
+          });
+        }
+      
+      var generationNumber = 0;
+      function geneticAlgorithm() {
+        clearLines();
+        // we cannot use setInterval as the timer depends on the slider
+        // we have to use setTimeout for the speed to vary through time
+        function timeout() {
+          var speed = $('#ga_slider').val();
+          window.optimizationTimer = setTimeout(function () {
+            generationNumber += 1;
+            $('#generation').text('Genetic algorithm (' + generationNumber + ')');
+            socket.emit('genetic_algorithm', {
+              mr: $('#Mutation_rate').slider('getValue'),
+              cr: $('#Crossover_rate').slider('getValue'),
+              mutation: $('#mutation').text(),
+              crossover: $('#crossover').text()
+              });
+            timeout();
+            }, 50000/speed);
+          };
+        timeout();
+        }
+      
+      var layers = {
+        'osm': 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+        'gm': 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
+        'nasa': 'http://tileserver.maptiler.com/nasa/{z}/{x}/{y}.jpg'
+        };
+      
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
       }
-
-    var polylines = [];
-    function clearLines(){
-      for (i = 0; i < polylines.length; i++) {
+      
+      // change drop-down value for crossover / mutation methods upon selection
+      $(".dropdown-menu li a").click(function(){
+        var type = $(this).parents(".dropdown").find('#type').val();
+        $('#' + type).text($(this).text());
+      });
+      
+      var sliders = ['base', 'ga'];
+      for (i = 0; i < sliders.length; i++) {
+        $('#' + sliders[i] + '_slider').slider({
+          formatter: function(value) { return 'Speed'; }
+          });
+        }
+      
+      $('#Crossover_rate').slider({
+        tooltip_position: 'left',
+        formatter: function(value) { return 'Crossover rate: ' + value; }
+        });
+      
+      $('#Mutation_rate').slider({
+        tooltip_position: 'left',
+        formatter: function(value) { return 'Mutation rate: ' + value; }
+        });
+      
+      socket.on('draw', function(paths, lengths, best) {
+        draw(paths, lengths, best);
+        });
+      
+      /* The following part is made of the code that depends on the dimension
+      - Initialization of the map (resp. globe) and drawing of the icons
+      - Initialiation of the tile layer */
+      
+      // 2D code
+      {% if view == '2D' %}
+        var map = L.map('map', { zoomControl:false }).setView([39, -98], 5);
+        var osm_layer = L.tileLayer(layers['osm']);
+        map.addLayer(osm_layer);
+        var current_layer = osm_layer;
+      
+        var icon_city = L.icon({
+          iconUrl: 'static/images/city.png',
+          iconSize: [20, 20], // size of the icon
+          iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
+          popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
+          });
+      
+        {% for id, properties in cities.items() %}  
+          var marker = L.marker([
+            {{ properties['latitude'] }}, 
+            {{ properties['longitude'] }}], 
+            );
+          
+          marker.bindPopup("{% for property in properties %}\
+          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+          {% endfor %}<br>");
+          
+          marker.bindTooltip("{{ properties['name'] }}", {
+            permanent: false, 
+            }
+          );
+          marker.setIcon(icon_city), 
+          marker.addTo(map);
+        {% endfor %}
+      {% else %}
+        var options = {sky:true, atmosphere: true};
+        var earth = new WE.map('earth', options);
+      
+        var current_layer = WE.tileLayer(layers['gm']);
+        current_layer.addTo(earth);
+      
+        {% for id, properties in cities.items() %}  
+          var marker = WE.marker(
+          [
+          {{ properties['latitude'] }}, 
+          {{ properties['longitude'] }}
+          ],
+          'static/images/city.png', 
+          20, 20
+          ).addTo(earth);
+      
+          marker.bindPopup("{% for property in properties %}\
+          <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+          {% endfor %}<br>");
+        {% endfor %}
+      {% endif %}
+      
+      function switch_layer(layer){
         {% if view == '2D' %}
-          map.removeLayer(polylines[i]);
+          map.removeLayer(current_layer);
+          current_layer = L.tileLayer(layers[layer]);
+          map.addLayer(current_layer);
         {% else %}
-          try { polylines[i].destroy(); }
-          catch(err) {};
+          current_layer.removeFrom(earth);
+          current_layer = WE.tileLayer(layers[layer]);
+          current_layer.addTo(earth);
         {% endif %}
         }
-      }
-
-    /* Function to draw a serie of paths, with optional arguments: 
-    - lengths for updating the length in real-time, if createPath is not
-    called from another function like createIntermediatePath */
-
-    async function draw(paths, lengths){
-      for (j = 0; j < paths.length; j++) {
-        // update the score
-        if (lengths) {
-          $("#score").text(Math.round(Number(lengths[j])));
-          }
-        var color = '#0000ff';
-        clearLines();
-        for (i = 0; i < paths[j].length - 1; i++) { 
-
-          var source_lat = paths[j][i][0];
-              source_lon = paths[j][i][1];
-              destination_lat = paths[j][i+1][0];
-              destination_lon = paths[j][i+1][1];
-
+      
+      var polylines = [];
+      function clearLines(){
+        for (i = 0; i < polylines.length; i++) {
           {% if view == '2D' %}
-            var pointA = new L.LatLng(source_lat, source_lon);
-            var pointB = new L.LatLng(destination_lat, destination_lon);
-            var pointList = [pointA, pointB];
-
-            var polyline = new L.Polyline(pointList, {
-              color: color,
-              weight: 3,
-              opacity: 1,
-              smoothFactor: 1
-              });
-
-            polyline.addTo(map);
-            polylines.push(polyline);
-            {% else %}
-              var polygonSD = WE.polygon(
-                [[source_lat, source_lon], [destination_lat, destination_lon],
-                [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
-              var polygonDS = WE.polygon(
-                [[destination_lat, destination_lon], [source_lat, source_lon],
-                [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
-              polylines.push(polygonSD, polygonDS)
-            {% endif %}
+            map.removeLayer(polylines[i]);
+          {% else %}
+            try { polylines[i].destroy(); }
+            catch(err) {};
+          {% endif %}
           }
-        var speed = $('#base_slider').val();
-        await sleep(50000/speed);
         }
-      }
-  </script>
-</body>
+      
+      /* Function to draw a serie of paths, with optional arguments: 
+      - lengths for updating the length in real-time, if createPath is not
+      called from another function like createIntermediatePath */
+      
+      async function draw(paths, lengths){
+        for (j = 0; j < paths.length; j++) {
+          // update the score
+          if (lengths) {
+            $("#score").text(Math.round(Number(lengths[j])));
+            }
+          var color = '#0000ff';
+          clearLines();
+          for (i = 0; i < paths[j].length - 1; i++) { 
+      
+            var source_lat = paths[j][i][0];
+                source_lon = paths[j][i][1];
+                destination_lat = paths[j][i+1][0];
+                destination_lon = paths[j][i+1][1];
+      
+            {% if view == '2D' %}
+              var pointA = new L.LatLng(source_lat, source_lon);
+              var pointB = new L.LatLng(destination_lat, destination_lon);
+              var pointList = [pointA, pointB];
+      
+              var polyline = new L.Polyline(pointList, {
+                color: color,
+                weight: 3,
+                opacity: 1,
+                smoothFactor: 1
+                });
+      
+              polyline.addTo(map);
+              polylines.push(polyline);
+              {% else %}
+                var polygonSD = WE.polygon(
+                  [[source_lat, source_lon], [destination_lat, destination_lon],
+                  [source_lat, source_lon]], {color: color,opacity: 20}).addTo(earth);
+                var polygonDS = WE.polygon(
+                  [[destination_lat, destination_lon], [source_lat, source_lon],
+                  [destination_lat, destination_lon]], {color: color,opacity: 20}).addTo(earth);
+                polylines.push(polygonSD, polygonDS)
+              {% endif %}
+            }
+          var speed = $('#base_slider').val();
+          await sleep(50000/speed);
+          }
+        }
+    </script>
+  </body>
 </html>
