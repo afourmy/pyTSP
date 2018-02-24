@@ -8,8 +8,8 @@
   <link href="{{ url_for('static', filename='bootstrap-slider/bootstrap-slider.min.css') }}" rel="stylesheet"></script>
   <!-- Leaflet -->
   <link href="{{ url_for('static', filename='leaflet/leaflet.css') }}" rel="stylesheet">
+  <!-- CSS code specific to pyTSP -->
   <link href="{{ url_for('static', filename='pytsp/pytsp.css') }}" rel="stylesheet">
-
   <!-- jQuery -->
   <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
   <!-- Bootstrap -->
@@ -34,7 +34,7 @@
       {% else %}
         <button type="submit" class="btn btn-primary" name="view" value="2D">2D view</button>
       {% endif %}
-  
+
       <div class="btn-group">
         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tile layer
           <span class="caret"></span>
@@ -45,15 +45,15 @@
           <li><a onclick="switch_layer('nasa')"> NASA </a></li>
         </ul>
       </div> 
-      
+
       <strong><p class="btn btn-danger score" style="min-width:100px;" id="score">Score</p></strong>
     </div>
   </form>
 
   <div class="panel-group" style="z-index:500; position: absolute; top: 20px; left:20px;">
-  
+
 <iframe src="https://ghbtns.com/github-btn.html?user=afourmy&repo=pytsp&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
-  
+
       <div class="panel panel-primary panel-transparent">
         <div class="panel-heading">Construction heuristics</div>
         <div class="panel-body">
@@ -65,7 +65,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="panel panel-primary panel-transparent">
         <div class="panel-heading">Optimization heuristics</div>
         <div class="panel-body">  
@@ -76,7 +76,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="panel panel-primary panel-transparent">
         <div class="panel-heading">Visualization speed</div>
         <div class="panel-body">    
@@ -85,7 +85,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="panel-group" style="z-index:500; position: absolute; top: 20px; right:20px;">
 
     <form id="fileform" class="form-horizontal form-label-left" enctype="multipart/form-data" method="post" >
@@ -147,7 +147,7 @@
     <div id="earth" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%;">
   {% endif %}
   <script>
-  
+
     document.getElementById("file").onchange = function() {
       $("#fileform").submit();
     };
@@ -231,8 +231,6 @@
         }
       });
 
-    // creation of the socket listener
-  
     socket.on('draw', function(paths, lengths, best) {
       draw(paths, lengths, best);
       });
@@ -240,7 +238,7 @@
     /* The following part is made of the code that depends on the dimension
     - Initialization of the map (resp. globe) and drawing of the icons
     - Initialiation of the tile layer */
-    
+
     // 2D code
     {% if view == '2D' %}
 
@@ -248,14 +246,14 @@
       var osm_layer = L.tileLayer(layers['osm']);
       map.addLayer(osm_layer);
       var current_layer = osm_layer;
-  
+
       var icon_city = L.icon({
         iconUrl: 'static/images/city.png',
         iconSize: [20, 20], // size of the icon
         iconAnchor: [9, 6], // point of the icon which will correspond to marker's location
         popupAnchor: [8, -5] // point from which the popup should open relative to the iconAnchor
         });
-  
+
       {% for id, properties in cities.items() %}  
         var marker = L.marker([
           {{ properties['latitude'] }}, 
@@ -263,9 +261,8 @@
           );
         
         marker.bindPopup("{% for property in properties %}\
-        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-        <input type='hidden' name='id' id='id' value={{ id }}>\
-        <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
         
         marker.bindTooltip("{{ properties['name'] }}", {
           permanent: false, 
@@ -276,13 +273,13 @@
       {% endfor %}
 
     {% else %}
-  
+
       var options = {sky:true, atmosphere: true};
       var earth = new WE.map('earth', options);
-  
+
       var current_layer = WE.tileLayer(layers['gm']);
       current_layer.addTo(earth);
-  
+
       {% for id, properties in cities.items() %}  
         var marker = WE.marker(
         [
@@ -292,11 +289,10 @@
         'static/images/city.png', 
         20, 20
         ).addTo(earth);
-        
+
         marker.bindPopup("{% for property in properties %}\
-        <b>{{ property }}</b>: {{ properties[property] }}<br>{% endfor %}<br>\
-        <input type='hidden' name='id' id='id' value={{ id }}>\
-        <input type='button' value='Connect' class='btn btn-round btn-danger' onclick='return connect_to_device()'/>");
+        <b>{{ property|capitalize }}</b>: {{ properties[property] }}<br>\
+        {% endfor %}<br>");
       {% endfor %}
     {% endif %}
 
@@ -311,9 +307,7 @@
         current_layer.addTo(earth);
       {% endif %}
       }
-      
-    // Function that clears all lines
-    
+
     function clearLines(){
       for (i = 0; i < polylines.length; i++) {
         {% if view == '2D' %}
@@ -326,7 +320,7 @@
         {% endif %}
         }
       }
-    
+
     /* Function to draw a serie of paths, with optional arguments: 
     - lengths for updating the length in real-time, if createPath is not
     called from another function like createIntermediatePath */
@@ -352,14 +346,14 @@
             var pointA = new L.LatLng(source_lat, source_lon);
             var pointB = new L.LatLng(destination_lat, destination_lon);
             var pointList = [pointA, pointB];
-    
+
             var polyline = new L.Polyline(pointList, {
               color: color,
               weight: 3,
               opacity: 1,
               smoothFactor: 1
               });
-      
+
             polyline.addTo(map);
             polylines.push(polyline);
             {% else %}
