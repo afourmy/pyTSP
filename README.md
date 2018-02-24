@@ -7,7 +7,7 @@ It provides a geographical step-by-step visualization of each of these algorithm
 
 ![pyTSP](readme/intro.gif)
 
-**You can find a demo of pyTSP on a small graph made of all U.S cities with a population larger than 800 000 inhabitants. _[here](http://google.com/)_ !**
+**You can find a _[demo of pyTSP here !](http://mintoo.pythonanywhere.com/)_ ** (U.S cities with a population larger than 900 000 inhabitants)
 
 # Algorithms
 
@@ -125,7 +125,7 @@ a valid tour. If this new tour is shorter, make the change.
 
 pyTSP implements a genetic algorithm with the following properties:
 - 3 mutation methods: random swap, insertion or displacement.
-- 3 crossover methods: order, maximally preservation, or partially mapped.
+- 3 crossover methods: order, maximally preservative, or partially mapped.
 - Selection: at each generation, 30 individuals are chosen randomly, and the 10 best are kept for the next generation.
 - Mutation and crossover rates default to 50%. They can be modified with sliders.
 
