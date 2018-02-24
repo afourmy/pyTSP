@@ -138,7 +138,6 @@ pyTSP implements a genetic algorithm with the following properties:
 The following modules are used in pyTSP:
 ```
 flask
-flask_wtf
 flask_socketio (sockets)
 flask_sqlalchemy (database)
 numpy (linear programming)
