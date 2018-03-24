@@ -1,4 +1,4 @@
-from .base_algorithm import *
+from .base_algorithm import BaseAlgorithm
 from operator import itemgetter
 from random import randrange
 
@@ -71,7 +71,7 @@ class TourConstructionHeuristics(BaseAlgorithm):
             idx, dist = None, float('inf')
             tour = tour + [tour[0]]
             for i in range(len(tour) - 1):
-                add = self.add(tour[i], tour[i+1], best)
+                add = self.add(tour[i], tour[i + 1], best)
                 if add < dist:
                     idx, dist = i, add
             tour_length += self.add(tour[idx], tour[idx + 1], best)

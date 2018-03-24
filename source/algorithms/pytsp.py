@@ -3,10 +3,7 @@ from algorithms.linear_programming import LinearProgramming
 from algorithms.tour_construction import TourConstructionHeuristics
 
 
-class pyTSP(
-    GeneticAlgorithm,
-    LinearProgramming,
-    TourConstructionHeuristics):
+class pyTSP(GeneticAlgorithm, LinearProgramming, TourConstructionHeuristics):
 
     algorithms = (
         'nearest_neighbor',
@@ -17,4 +14,4 @@ class pyTSP(
         'node_insertion',
         'edge_insertion',
         'ILP_solver'
-        )
+    )

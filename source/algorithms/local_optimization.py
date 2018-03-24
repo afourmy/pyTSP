@@ -1,4 +1,4 @@
-from .base_algorithm import *
+from .base_algorithm import BaseAlgorithm
 from functools import partialmethod
 
 
@@ -8,7 +8,7 @@ class LocalOptmizationHeuristics(BaseAlgorithm):
 
     # swap two edges
     def swap(self, solution, x, y):
-        return solution[:x] + solution[x:y+1][::-1] + solution[y+1:]
+        return solution[:x] + solution[x:y + 1][::-1] + solution[y + 1:]
 
     def pairwise_exchange(self, ga_solution=None):
         solution = ga_solution or self.generate_solution()
