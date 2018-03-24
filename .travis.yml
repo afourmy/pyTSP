@@ -1,0 +1,20 @@
+language: python
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+
+install:
+  - pip install -r requirements_dev.txt
+
+before_script:
+  cd tests/
+
+script:
+  - flake8
+  - coverage run --source=../swap -m pytest
+
+after_success:
+  - coveralls
