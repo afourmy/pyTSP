@@ -14,7 +14,7 @@ before_script:
 
 script:
   - flake8
-  - coverage run --source=../swap -m pytest
+  - coverage run --source=../source -m pytest
 
 after_success:
   - coveralls
