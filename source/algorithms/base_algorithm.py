@@ -16,7 +16,7 @@ class BaseAlgorithm():
         self.distances = self.compute_distances()
 
     def hav(self, angle):
-        return sin(angle/2)**2
+        return sin(angle / 2)**2
 
     def haversine_distance(self, cityA, cityB):
         coords = (*self.coords[cityA], *self.coords[cityB])
@@ -27,7 +27,7 @@ class BaseAlgorithm():
         a = self.hav(delta_lat) + cos(lat_cityA) * cos(lat_cityB) * self.hav(delta_lon)
         c = 2 * asin(sqrt(a))
         # approximate radius of the Earth: 6371 km
-        return c*6371
+        return c * 6371
 
     def compute_distances(self):
         self.distances = defaultdict(dict)
@@ -50,7 +50,7 @@ class BaseAlgorithm():
     def compute_length(self, solution):
         total_length = 0
         for i in range(len(solution)):
-            length = self.distances[solution[i]][solution[(i+1) % len(solution)]]
+            length = self.distances[solution[i]][solution[(i + 1) % len(solution)]]
             total_length += length
         return total_length
 

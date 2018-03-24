@@ -2,19 +2,18 @@ from collections import OrderedDict
 from threading import Lock
 from flask import Blueprint, Flask, jsonify, render_template, request, session
 from flask_socketio import emit, SocketIO
-from json import dumps, load
+from json import load
 from os.path import abspath, dirname, join, pardir
 from sqlalchemy import exc as sql_exception
-from sys import dont_write_bytecode, path
 from werkzeug.utils import secure_filename
 from xlrd import open_workbook
-from xlrd.biffh import XLRDError
+import sys
 
-dont_write_bytecode = True
+sys.dont_write_bytecode = True
 path_app = dirname(abspath(__file__))
 path_parent = abspath(join(path_app, pardir))
-if path_app not in path:
-    path.append(path_app)
+if path_app not in sys.path:
+    sys.path.append(path_app)
 
 from algorithms.pytsp import pyTSP
 from database import db, create_database
@@ -53,15 +52,15 @@ def index():
         city.id: OrderedDict([
             (property, getattr(city, property))
             for property in City.properties
-            ])
+        ])
         for city in City.query.all()
-        }
+    }
     return render_template(
         'index.html',
         view=view,
         cities=cities,
         async_mode=socketio.async_mode
-        )
+    )
 
 
 @bp.route('/<algorithm>', methods=['POST'])
@@ -122,6 +121,7 @@ def genetic_algorithm(data):
     if length < session['best']:
         session['best'] = length
         emit('draw', ([best], [length]))
+
 
 if __name__ == '__main__':
     socketio.run(app)

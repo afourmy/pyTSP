@@ -1,5 +1,5 @@
-from .local_optimization import *
-from random import randint, random, randrange, sample, shuffle
+from .local_optimization import LocalOptmizationHeuristics
+from random import randint, random, randrange, sample
 
 
 class GeneticAlgorithm(LocalOptmizationHeuristics):
@@ -9,14 +9,14 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         'OC': 'order_crossover',
         'MPC': 'maximal_preservative_crossover',
         'PMC': 'partially_mapped_crossover'
-        }
+    }
 
     mutations = {
         'Mutation method': 'swap_mutation',
         'Swap': 'swap_mutation',
         'Insertion': 'insertion_mutation',
         'Displacement': 'displacement_mutation'
-        }
+    }
 
     def __init__(self):
         super().__init__()
@@ -63,9 +63,9 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         return ni1, ni2
 
     def maximal_preservative_crossover(self, i1, i2):
-        c = len(i1)//2
+        c = len(i1) // 2
         r = randrange(self.size + 1)
-        s1, s2 = (i1*2)[r:r+c], (i2*2)[r:r+c]
+        s1, s2 = (i1 * 2)[r:r + c], (i2 * 2)[r:r + c]
         for x in s1:
             i2.remove(x)
         for x in s2:
@@ -89,7 +89,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
 
     def partially_mapped_crossover(self, i1, i2):
         a, b = self.crossover_cut()
-        ni1, ni2 = [0]*self.size, [0]*self.size
+        ni1, ni2 = [0] * self.size, [0] * self.size
         ni1[a:b], ni2[a:b] = i1[a:b], i2[a:b]
         self.partial_mapping(i1, i2, ni1, ni2, a, b)
         self.partial_mapping(i2, i1, ni2, ni1, a, b)
@@ -116,7 +116,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         for par in zip(generation[::2], generation[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
         # mutation step
-        ng = [getattr(self, mutation)(i) for i in ng]
+        ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
         # order the generation according to the fitness value
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
