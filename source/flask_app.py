@@ -1,9 +1,9 @@
 from collections import OrderedDict
 from threading import Lock
-from flask import Flask, jsonify, render_template, request, session
+from flask import Blueprint, Flask, jsonify, render_template, request, session
 from flask_socketio import emit, SocketIO
 from json import dumps, load
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join, pardir
 from sqlalchemy import exc as sql_exception
 from sys import dont_write_bytecode, path
 from werkzeug.utils import secure_filename
@@ -12,6 +12,7 @@ from xlrd.biffh import XLRDError
 
 dont_write_bytecode = True
 path_app = dirname(abspath(__file__))
+path_parent = abspath(join(path_app, pardir))
 if path_app not in path:
     path.append(path_app)
 
@@ -19,47 +20,7 @@ from algorithms.pytsp import pyTSP
 from database import db, create_database
 from models import City
 
-
-def configure_database(app):
-    create_database()
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        db.session.remove()
-    db.init_app(app)
-
-
-def configure_socket(app):
-    async_mode = None
-    socketio = SocketIO(app, async_mode=async_mode)
-    thread_lock = Lock()
-    return socketio
-
-
-def import_cities():
-    with open(join(path_app, 'data', 'cities.json')) as data:
-        for city_dict in load(data):
-            if int(city_dict['population']) < 900000:
-                continue
-            city = City(**city_dict)
-            db.session.add(city)
-        try:
-            db.session.commit()
-        except sql_exception.IntegrityError:
-            db.session.rollback()
-
-
-def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'key'
-    configure_database(app)
-    socketio = configure_socket(app)
-    import_cities()
-    tsp = pyTSP()
-    return app, socketio, tsp
-
-
-app, socketio, tsp = create_app()
+bp = Blueprint('tsp_app', __name__)
 
 
 def allowed_file(name, allowed_extensions):
@@ -68,7 +29,7 @@ def allowed_file(name, allowed_extensions):
     return allowed_syntax and allowed_extension
 
 
-@app.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     if 'file' in request.files:
         filename = request.files['file'].filename
@@ -103,10 +64,54 @@ def index():
         )
 
 
-@app.route('/<algorithm>', methods=['POST'])
+@bp.route('/<algorithm>', methods=['POST'])
 def algorithm(algorithm):
     session['best'] = float('inf')
     return jsonify(*getattr(tsp, algorithm)())
+
+
+def configure_database(app):
+    create_database()
+
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        db.session.remove()
+    db.init_app(app)
+
+
+def configure_socket(app):
+    async_mode = None
+    socketio = SocketIO(app, async_mode=async_mode)
+    thread_lock = Lock()
+    return socketio
+
+
+def import_cities():
+    with open(join(path_parent, 'data', 'cities.json')) as data:
+        for city_dict in load(data):
+            if int(city_dict['population']) < 900000:
+                continue
+            city = City(**city_dict)
+            db.session.add(city)
+        try:
+            db.session.commit()
+        except sql_exception.IntegrityError:
+            db.session.rollback()
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'key'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.register_blueprint(bp)
+    configure_database(app)
+    socketio = configure_socket(app)
+    import_cities()
+    tsp = pyTSP()
+    return app, socketio, tsp
+
+
+app, socketio, tsp = create_app()
 
 
 @socketio.on('genetic_algorithm')
@@ -117,7 +122,6 @@ def genetic_algorithm(data):
     if length < session['best']:
         session['best'] = length
         emit('draw', ([best], [length]))
-
 
 if __name__ == '__main__':
     socketio.run(app)
