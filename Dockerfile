@@ -4,10 +4,10 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY gunicorn_config.py .
+COPY gunicorn.py .
 
 COPY source /source
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--chdir", "source", "--config", "./gunicorn_config.py", "flask_app:app"]
+CMD ["gunicorn", "--chdir", "source", "--config", "./gunicorn.py", "flask_app:app"]
