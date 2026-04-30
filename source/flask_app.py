@@ -34,7 +34,7 @@ def index():
         filename = request.files['file'].filename
         if allowed_file(filename, {'xls', 'xlsx'}):
             filename = secure_filename(filename)
-            filepath = join(path_app, 'data', filename)
+            filepath = join(path_parent, 'data', filename)
             request.files['file'].save(filepath)
             sheet = open_workbook(filepath).sheet_by_index(0)
             properties = sheet.row_values(0)
