@@ -6,7 +6,7 @@ from json import load
 from os.path import abspath, dirname, join, pardir
 from sqlalchemy import exc as sql_exception
 from werkzeug.utils import secure_filename
-from xlrd import open_workbook
+from openpyxl import load_workbook
 import sys
 
 sys.dont_write_bytecode = True
@@ -36,11 +36,12 @@ def index():
             filename = secure_filename(filename)
             filepath = join(path_parent, 'data', filename)
             request.files['file'].save(filepath)
-            sheet = open_workbook(filepath).sheet_by_index(0)
-            properties = sheet.row_values(0)
+            sheet = load_workbook(filepath).active
+            rows = list(sheet.iter_rows(values_only=True))
+            properties = rows[0]
             db.session.query(City).delete()
-            for row_index in range(1, sheet.nrows):
-                city_dict = dict(zip(properties, sheet.row_values(row_index)))
+            for row in rows[1:]:
+                city_dict = dict(zip(properties, row))
                 city = City(**city_dict)
                 db.session.add(city)
             db.session.commit()
