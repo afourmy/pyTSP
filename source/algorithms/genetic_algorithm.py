@@ -101,38 +101,20 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
 
     ## Core algorithm
 
-    population_size = 100
-
-    def initial_population(self):
-        return [self.generate_solution() for _ in range(self.population_size)]
-
-    def tournament_select(self, population, k=5):
-        candidates = sample(population, k)
-        return min(candidates, key=self.compute_length)[:]
+    def select(self, population):
+        return min(sample(population, 5), key=self.compute_length)[:]
 
     def cycle(self, generation, **data):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
-        # initialize population on first cycle
         if not generation:
-            generation = self.initial_population()
-        # build next generation, preserving the best individual (elitism)
+            generation = [self.generate_solution() for _ in range(100)]
         generation = sorted(generation, key=self.compute_length)
+        # elitism: keep best, fill rest via selection + crossover + mutation
         ng = [generation[0][:]]
-        # fill the rest via selection, crossover, and mutation
-        while len(ng) < self.population_size:
-            p1 = self.tournament_select(generation)
-            p2 = self.tournament_select(generation)
-            if random() < cr:
-                c1, c2 = getattr(self, crossover)(p1, p2)
-            else:
-                c1, c2 = p1, p2
-            if random() < mr:
-                c1 = getattr(self, mutation)(c1)
-            if random() < mr:
-                c2 = getattr(self, mutation)(c2)
-            ng.append(c1)
-            if len(ng) < self.population_size:
-                ng.append(c2)
-        ng = sorted(ng, key=self.compute_length)
+        while len(ng) < len(generation):
+            p1, p2 = self.select(generation), self.select(generation)
+            children = getattr(self, crossover)(p1, p2) if random() < cr else (p1, p2)
+            ng.extend(getattr(self, mutation)(c) if random() < mr else c for c in children)
+        ng = sorted(ng[:len(generation)], key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
