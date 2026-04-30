@@ -26,11 +26,13 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
     ## Mutation methods
 
     def swap_mutation(self, solution):
+        solution = solution[:]
         i, j = randrange(self.size), randrange(self.size)
         solution[i], solution[j] = solution[j], solution[i]
         return solution
 
     def insertion_mutation(self, solution):
+        solution = solution[:]
         random_city, random_position = randrange(self.size), randrange(self.size)
         city = solution.pop(random_city)
         solution.insert(random_position, city)
@@ -102,7 +104,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
     def fill_generation(self, generation):
         # we select 30 random elements and keep only the best 10
         if generation:
-            generation = sorted(sample(generation, 30), key=self.compute_length)[10:]
+            generation = sorted(sample(generation, 30), key=self.compute_length)[:10]
         while len(generation) < 70:
             generation.append(self.generate_solution())
         return generation
@@ -113,7 +115,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         # selection: we keep only the 10 best individual of the last generation
         ng = self.fill_generation(generation)
         # crossover step: parents par, new generation ng
-        for par in zip(generation[::2], generation[1::2]):
+        for par in zip(ng[::2], ng[1::2]):
             ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
         # mutation step
         ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
