@@ -101,24 +101,38 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
 
     ## Core algorithm
 
-    def fill_generation(self, generation):
-        # we select 30 random elements and keep only the best 10
-        if generation:
-            generation = sorted(sample(generation, 30), key=self.compute_length)[:10]
-        while len(generation) < 70:
-            generation.append(self.generate_solution())
-        return generation
+    population_size = 100
+
+    def initial_population(self):
+        return [self.generate_solution() for _ in range(self.population_size)]
+
+    def tournament_select(self, population, k=5):
+        candidates = sample(population, k)
+        return min(candidates, key=self.compute_length)[:]
 
     def cycle(self, generation, **data):
         cr, crossover = data['cr'], self.crossovers[data['crossover']]
         mr, mutation = data['mr'], self.mutations[data['mutation']]
-        # selection: we keep only the 10 best individual of the last generation
-        ng = self.fill_generation(generation)
-        # crossover step: parents par, new generation ng
-        for par in zip(ng[::2], ng[1::2]):
-            ng.extend(getattr(self, crossover)(*par) if random() < cr else par)
-        # mutation step
-        ng = [getattr(self, mutation)(i) if random() < mr else i for i in ng]
-        # order the generation according to the fitness value
+        # initialize population on first cycle
+        if not generation:
+            generation = self.initial_population()
+        # build next generation, preserving the best individual (elitism)
+        generation = sorted(generation, key=self.compute_length)
+        ng = [generation[0][:]]
+        # fill the rest via selection, crossover, and mutation
+        while len(ng) < self.population_size:
+            p1 = self.tournament_select(generation)
+            p2 = self.tournament_select(generation)
+            if random() < cr:
+                c1, c2 = getattr(self, crossover)(p1, p2)
+            else:
+                c1, c2 = p1, p2
+            if random() < mr:
+                c1 = getattr(self, mutation)(c1)
+            if random() < mr:
+                c2 = getattr(self, mutation)(c2)
+            ng.append(c1)
+            if len(ng) < self.population_size:
+                ng.append(c2)
         ng = sorted(ng, key=self.compute_length)
         return ng, self.format_solution(ng[0]), self.compute_length(ng[0])
