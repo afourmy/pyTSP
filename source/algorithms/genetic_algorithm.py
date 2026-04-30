@@ -18,11 +18,6 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         'Displacement': 'displacement_mutation'
     }
 
-    def __init__(self):
-        super().__init__()
-        self.crossover = 'order_crossover'
-        self.mutation = 'random_mutation'
-
     ## Mutation methods
 
     def swap_mutation(self, solution):
@@ -65,6 +60,7 @@ class GeneticAlgorithm(LocalOptmizationHeuristics):
         return ni1, ni2
 
     def maximal_preservative_crossover(self, i1, i2):
+        i1, i2 = i1[:], i2[:]
         c = len(i1) // 2
         r = randrange(self.size + 1)
         s1, s2 = (i1 * 2)[r:r + c], (i2 * 2)[r:r + c]
